@@ -1,0 +1,11 @@
+encryptionsalt: v1:fjmPxYo3UNM=:v1:WUTSsHNhyMD7eKgo:9KcwlrK1EimBBJ6Y0N6tYpfQyhBhvA==
+config:
+  aws:region: us-east-1
+  cloudflare:apiToken:
+    secure: v1:FRgKeMexG/q/qXmg:sXV61pl6B8rxs/sGh7t5YBEqB0Gkwbm1Q5H7dAc/GJ4ipXTjCBH76cEZFi0un6ImTz1Uq4ZGY88=
+  infrastructure:domain:
+    secure: v1:DH5VD5QbGUE6BD2x:rZpM1XDujBx8R4C7D6mmBq/3UxIFGWlT67I=
+  infrastructure:cfAccountId:
+    secure: v1:DaVl62PUPK6n71cI:79WwTAlXoXr7wzygyOqnVjhGZhxzsh0NZBUYfkBtOECHZ08tXnLkCFTTKoq3FWG5
+  infrastructure:zoneId:
+    secure: v1:64jN2K15e2cKSrFs:Dpj8cRqR1mTqVU7lQLZj8xMaIBzn4txn4UfQhXs4rP/jGW4miEtj6j+10QHJwf7W
