@@ -1,7 +1,3 @@
-# TODO
-- [ ] Remove lightsail, just pulumi for cloudflare stuffs
-- [ ] Foundry & Cloudflare tunnel setup
-- [ ] Docker compose --> Kubernetes
-  - [ ] Look at Longhorn for persistent storage (backup to S3)
-- [ ] Paperless
-- [ ] Ansible-fy (or similar) all this
+## Resources / ideas
+- [K8s selfhosting reddit thread](https://www.reddit.com/r/selfhosted/comments/85rj9d/kubernetes_anyone_use_this_for_their_home_systems/)
+- [Maintaining containers for various self-hosted services on a single machine](https://www.reddit.com/r/selfhosted/comments/k3jwkd/maintaining_containers_for_various_selfhosted/)
