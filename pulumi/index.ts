@@ -1,6 +1,15 @@
 import * as cloudflare from "@pulumi/cloudflare";
 import * as pulumi from "@pulumi/pulumi";
 
+interface CloudflareConfig {
+	accountId: string
+	zoneId: string
+}
+
+interface InfrastructureConfig {
+	domain: string	
+	cloudflare: CloudflareConfig
+}
 const config = new pulumi.Config();
 
 // // Create an S3 Bucket for storage
@@ -102,48 +111,58 @@ const config = new pulumi.Config();
 //     },
 // );
 
-// Configurable settings
-const cloudflareAccountId = config.require("cfAccountId");
-const domain = config.require("domain");
-const zoneId = config.require("zoneId");
 
-const tunnel = new cloudflare.ZeroTrustTunnelCloudflared("foundry_tunnel", {
-    accountId: cloudflareAccountId,
-    name: "foundry-tunnel",
-    configSrc: "cloudflare",
-});
 
-// const zeroTrustAccessApplicationResource =
-//     new cloudflare.ZeroTrustAccessApplication("foundry-zero-trust-app", {
-//         accountId: cloudflareAccountId,
-//         domain: domain,
-//     });
+async function configureCloudflare() {
+	// Configurable settings
+	// TODO: stack args 
+	const data = config.requireObject<InfrastructureConfig>("infrastructure")
+	const cloudflareAccountId = data.cloudflare.accountId;
+	const zoneId = data.cloudflare.zoneId;
+	const domain = data.domain;
 
-const dnsRecord = new cloudflare.DnsRecord("dns-record", {
-    name: "foundry",
-    ttl: 1,
-    type: "CNAME",
-    zoneId: zoneId,
-    proxied: true,
-    content: "a361db38-afad-4c5a-958e-509eecaec136.cfargotunnel.com", // TODO: extract
-});
+	const tunnel = new cloudflare.ZeroTrustTunnelCloudflared("foundry_tunnel", {
+		accountId: cloudflareAccountId,
+		name: "foundry-tunnel",
+		configSrc: "cloudflare",
+	});
 
-const tunnelConfig = new cloudflare.ZeroTrustTunnelCloudflaredConfig(
-    "zeroTrustTunnelCloudflaredConfigResource",
-    {
-        accountId: tunnel.accountId,
-        tunnelId: tunnel.id,
-        config: {
-            ingresses: [
-                {
-                    service: "http://foundry",
-                    hostname: pulumi.interpolate`foundry.${domain}`,
-                },
-                {
-                    service: "http_status:404",
-                },
-            ],
-        },
-        source: "cloudflare",
-    },
-);
+	// const zeroTrustAccessApplicationResource =
+	//     new cloudflare.ZeroTrustAccessApplication("foundry-zero-trust-app", {
+	//         accountId: cloudflareAccountId,
+	//         domain: domain,
+	//     });
+
+	const dnsRecord = new cloudflare.DnsRecord("dns-record", {
+		name: "foundry",
+		ttl: 1,
+		type: "CNAME",
+		zoneId: zoneId,
+		proxied: true,
+		content: "a361db38-afad-4c5a-958e-509eecaec136.cfargotunnel.com", // TODO: extract
+	});
+
+	const tunnelConfig = new cloudflare.ZeroTrustTunnelCloudflaredConfig(
+		"zeroTrustTunnelCloudflaredConfigResource",
+		{
+			accountId: tunnel.accountId,
+			tunnelId: tunnel.id,
+			config: {
+				ingresses: [
+					{
+						service: "http://foundry",
+						hostname: pulumi.interpolate`foundry.${domain}`,
+					},
+					{
+						service: "http_status:404",
+					},
+				],
+			},
+			source: "cloudflare",
+		},
+	);
+}
+
+export = async () => {
+	configureCloudflare()
+}
