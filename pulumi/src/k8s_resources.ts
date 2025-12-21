@@ -104,7 +104,7 @@ export async function configureFoundry() {
     });
 }
 
-async function configureCloudflaredDeployment() {
+export async function configureCloudflaredDeployment() {
     const cloudflaredDeployment = new k8s.apps.v1.Deployment(
         "cloudflaredDeployment",
         {
