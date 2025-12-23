@@ -1,13 +1,10 @@
-# Architecture
-## Traefik
-- k3s uses Traefik to handle external traffic into the cluser
-- a smart reverse proxy, sorta
-
+# Architecture Notes
 ## Pulumi
-- used to manage cloudflare resources
+- Used to manage cloudflare resources
+- Configure and deploy ArgoCD helm chart
 
 ## ArgoCD
-- continuous delivery of k8s resources
+- Continuous delivery of k8s resources, repo as souce-of-truth
 
 # Resources / ideas
 - [K8s selfhosting reddit thread](https://www.reddit.com/r/selfhosted/comments/85rj9d/kubernetes_anyone_use_this_for_their_home_systems/)
