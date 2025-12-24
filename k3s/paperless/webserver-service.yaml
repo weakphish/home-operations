@@ -8,8 +8,8 @@ metadata:
     io.kompose.service: webserver
   name: webserver
 spec:
-  type: LoadBalancer
-  loadBalancerClass: tailscale
+  # type: LoadBalancer
+  # loadBalancerClass: tailscale
   ports:
     - name: "8000"
       port: 8000
