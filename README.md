@@ -30,6 +30,7 @@
 
 ## ArgoCD
 - Continuous delivery of k8s resources, repo as souce-of-truth
+- Cloudflared tunnel deployment
 
 # Resources / ideas
 - [K8s selfhosting reddit thread](https://www.reddit.com/r/selfhosted/comments/85rj9d/kubernetes_anyone_use_this_for_their_home_systems/)

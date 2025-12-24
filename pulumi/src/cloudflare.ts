@@ -34,7 +34,7 @@ export function configureCloudflare(data: InfrastructureConfig) {
         config: {
             ingresses: [
                 {
-                    service: "http://foundry",
+                    service: "http://foundry:80",
                     hostname: pulumi.interpolate`foundry.${domain}`,
                 },
                 {
@@ -53,10 +53,10 @@ export function configureCloudflare(data: InfrastructureConfig) {
     //             domain: domain,
     //             type: "self_hosted",
     //         });
-    configureCloudflaredDeployment(data.cloudflare.tunnelToken);
+    configureCloudflareTokenSecret(data.cloudflare.tunnelToken);
 }
 
-async function configureCloudflaredDeployment(token: pulumi.Input<string>) {
+async function configureCloudflareTokenSecret(token: pulumi.Input<string>) {
     const tunnelToken = new k8s.core.v1.Secret("tunnelToken", {
         metadata: {
             name: "tunnel-token",
@@ -66,75 +66,4 @@ async function configureCloudflaredDeployment(token: pulumi.Input<string>) {
             token: token,
         },
     });
-    const cloudflaredDeployment = new k8s.apps.v1.Deployment(
-        "cloudflaredDeployment",
-        {
-            metadata: {
-                name: "cloudflared-deployment",
-                namespace: "default",
-            },
-            spec: {
-                replicas: 2,
-                selector: {
-                    matchLabels: {
-                        pod: "cloudflared",
-                    },
-                },
-                template: {
-                    metadata: {
-                        labels: {
-                            pod: "cloudflared",
-                        },
-                    },
-                    spec: {
-                        containers: [
-                            {
-                                command: [
-                                    "cloudflared",
-                                    "tunnel",
-                                    "--no-autoupdate",
-                                    "--loglevel",
-                                    "info",
-                                    "--metrics",
-                                    "0.0.0.0:2000",
-                                    "run",
-                                ],
-                                // TODO: make pulumi secret
-                                env: [
-                                    {
-                                        name: "TUNNEL_TOKEN",
-                                        valueFrom: {
-                                            secretKeyRef: {
-                                                key: "token",
-                                                name: "tunnel-token",
-                                            },
-                                        },
-                                    },
-                                ],
-                                image: "cloudflare/cloudflared:latest",
-                                livenessProbe: {
-                                    failureThreshold: 1,
-                                    httpGet: {
-                                        path: "/ready",
-                                        port: 2000,
-                                    },
-                                    initialDelaySeconds: 10,
-                                    periodSeconds: 10,
-                                },
-                                name: "cloudflared",
-                            },
-                        ],
-                        securityContext: {
-                            sysctls: [
-                                {
-                                    name: "net.ipv4.ping_group_range",
-                                    value: "65532 65532",
-                                },
-                            ],
-                        },
-                    },
-                },
-            },
-        },
-    );
 }
