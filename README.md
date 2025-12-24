@@ -12,8 +12,10 @@
 - [ ] Update board
 - [ ] Make network/arch diagram
 
+- [ ] Make Argo available to Tailscale
+
 - [X] Expose Foundry w/ Cloudflare
-- [ ] Close Foundry behind CF Application
+- [X] Close Foundry behind CF Application
 - [ ] Figure out permanent Foundry (k8s) storage
 
 # Architecture Notes
