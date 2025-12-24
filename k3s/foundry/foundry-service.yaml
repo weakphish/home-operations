@@ -11,8 +11,8 @@ spec:
   type: LoadBalancer
   loadBalancerClass: tailscale
   ports:
-    - name: "30000"
+    - name: "Foundry Port"
       port: 30000
-      targetPort: 30000
+      targetPort: 80
   selector:
     io.kompose.service: foundry
