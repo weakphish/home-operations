@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.37.0 (HEAD)
+  labels:
+    io.kompose.service: foundry
+  name: foundry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: foundry
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.37.0 (HEAD)
+      labels:
+        io.kompose.service: foundry
+    spec:
+      containers:
+        - env:
+            - name: FOUNDRY_ADMIN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: foundry-creds
+                  key: admin-pw
+            - name: FOUNDRY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: foundry-creds
+                  key: password
+            - name: FOUNDRY_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: foundry-creds
+                  key: username
+          image: felddy/foundryvtt:13
+          name: foundry
+          ports:
+            - containerPort: 30000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /data
+              name: foundry-claim0
+      hostname: foundry
+      restartPolicy: Always
+      volumes:
+        - name: foundry-claim0
+          persistentVolumeClaim:
+            claimName: foundry-claim0
