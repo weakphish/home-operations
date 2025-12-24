@@ -1,7 +1,25 @@
+# TODO
+- [X] Remove non-foundry Cloudflare
+- [X] Set up ArgoCD - Pulumi bootstrap
+    - Port forward from K9s to set up from laptop
+- [ ] Set up Tailscale w/ Argo in K8s cluster
+    - [X] K8s operator
+        - Set up by manually inputting Helm chart into Argo UI w/ client ID/secret
+            - Would be nice to make this more automatic
+    - [ ] Service annotation
+    - [ ] ACL
+    - [ ] MFA
+- [ ] Update board
+- [ ] Make network/arch diagram
+
 # Architecture Notes
+## Networking
+- Cloudflare for 'application' access - in my case, Foundry for DnD sessions
+- Tailscale for everything else 
+
 ## Pulumi
-- Used to manage cloudflare resources
-- Configure and deploy ArgoCD helm chart
+- Used to manage Cloudflare resources
+- Configure and deploy ArgoCD helm chart - bootstrap K8s basically
 
 ## ArgoCD
 - Continuous delivery of k8s resources, repo as souce-of-truth
