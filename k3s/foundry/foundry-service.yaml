@@ -8,8 +8,6 @@ metadata:
     io.kompose.service: foundry
   name: foundry
 spec:
-  type: LoadBalancer
-  loadBalancerClass: tailscale
   ports:
     - name: "foundry-port"
       port: 30000
