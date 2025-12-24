@@ -2,6 +2,7 @@ import * as cloudflare from "@pulumi/cloudflare";
 import * as k8s from "@pulumi/kubernetes";
 import * as pulumi from "@pulumi/pulumi";
 import { InfrastructureConfig } from "./types";
+import { ZeroTrustAccessApplicationPolicyIncludeEmail } from "@pulumi/cloudflare/types/input";
 
 /**
  * Configure Cloudflare resources - a tunnel, application and DNS records
@@ -46,11 +47,26 @@ export function configureCloudflare(data: InfrastructureConfig) {
     });
 
     // Create zero-trust application
+    const emailIncludes = data.cloudflare.foundryEmails.map((e: string) => {
+        return {
+            email: {
+                email: e,
+            },
+        };
+    });
+
     new cloudflare.ZeroTrustAccessApplication("foundry-zero-trust-app", {
         name: "foundry",
         accountId: accountId,
         domain: pulumi.interpolate`foundry.${domain}`,
         type: "self_hosted",
+        policies: [
+            {
+                name: "allow-dnd-players",
+                decision: "allow",
+                includes: emailIncludes,
+            },
+        ],
     });
 
     configureCloudflareTokenSecret(data.cloudflare.tunnelToken);

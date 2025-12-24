@@ -11,5 +11,7 @@ config:
         secure: v1:DaVl62PUPK6n71cI:79WwTAlXoXr7wzygyOqnVjhGZhxzsh0NZBUYfkBtOECHZ08tXnLkCFTTKoq3FWG5
       zoneId:
         secure: v1:64jN2K15e2cKSrFs:Dpj8cRqR1mTqVU7lQLZj8xMaIBzn4txn4UfQhXs4rP/jGW4miEtj6j+10QHJwf7W
+      foundryEmails:
+        - jack@weakphi.sh
     domain:
       secure: v1:DH5VD5QbGUE6BD2x:rZpM1XDujBx8R4C7D6mmBq/3UxIFGWlT67I=
