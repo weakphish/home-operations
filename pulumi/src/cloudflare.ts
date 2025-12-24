@@ -34,7 +34,7 @@ export function configureCloudflare(data: InfrastructureConfig) {
         config: {
             ingresses: [
                 {
-                    service: "http://foundry",
+                    service: "http://foundry:30000",
                     hostname: pulumi.interpolate`foundry.${domain}`,
                 },
                 {
