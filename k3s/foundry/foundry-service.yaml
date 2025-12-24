@@ -11,7 +11,7 @@ spec:
   type: LoadBalancer
   loadBalancerClass: tailscale
   ports:
-    - name: "Foundry Port"
+    - name: "foundry-port"
       port: 30000
       targetPort: 80
   selector:
