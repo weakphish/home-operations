@@ -1,6 +1,7 @@
 export interface CloudflareConfig {
     accountId: string;
     zoneId: string;
+    tunnelToken: string;
 }
 
 export interface InfrastructureConfig {

@@ -6,20 +6,27 @@
     - [X] K8s operator
         - Set up by manually inputting Helm chart into Argo UI w/ client ID/secret
             - Would be nice to make this more automatic
-    - [ ] Service annotation
-    - [ ] ACL
+    - [x] Test w/ Foundry service
+    - [X] Service annotation
     - [ ] MFA
 - [ ] Update board
 - [ ] Make network/arch diagram
+
+- [ ] Expose Foundry w/ Cloudflare
+- [ ] Figure out permanent Foundry (k8s) storage
 
 # Architecture Notes
 ## Networking
 - Cloudflare for 'application' access - in my case, Foundry for DnD sessions
 - Tailscale for everything else 
+    - [Tailscale K8s operator pod](https://tailscale.com/kb/1236/kubernetes-operator#setup)
 
 ## Pulumi
 - Used to manage Cloudflare resources
-- Configure and deploy ArgoCD helm chart - bootstrap K8s basically
+    - Creates tunnel & DNS records
+    - Creates zero-trust application
+- Configure and deploy ArgoCD helm chart 
+- Bootstrap K8s cluster basically
 
 ## ArgoCD
 - Continuous delivery of k8s resources, repo as souce-of-truth
