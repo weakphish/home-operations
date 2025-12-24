@@ -12,7 +12,8 @@
 - [ ] Update board
 - [ ] Make network/arch diagram
 
-- [ ] Expose Foundry w/ Cloudflare
+- [X] Expose Foundry w/ Cloudflare
+- [ ] Close Foundry behind CF Application
 - [ ] Figure out permanent Foundry (k8s) storage
 
 # Architecture Notes

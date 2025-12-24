@@ -46,13 +46,13 @@ export function configureCloudflare(data: InfrastructureConfig) {
     });
 
     // Create zero-trust application
-    //     const zeroTrustAccessApplicationResource =
-    //         new cloudflare.ZeroTrustAccessApplication("argo-zero-trust-app", {
-    //             name: "infra",
-    //             accountId: accountId,
-    //             domain: domain,
-    //             type: "self_hosted",
-    //         });
+    new cloudflare.ZeroTrustAccessApplication("foundry-zero-trust-app", {
+        name: "foundry",
+        accountId: accountId,
+        domain: pulumi.interpolate`foundry.${domain}`,
+        type: "self_hosted",
+    });
+
     configureCloudflareTokenSecret(data.cloudflare.tunnelToken);
 }
 
