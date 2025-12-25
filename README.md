@@ -1,28 +1,21 @@
 # TODO
+## Infra
 - [ ] Write Ansible playbook to bootstrap a server
+    - [ ] K3s
     - [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
-
-- [X] Remove non-foundry Cloudflare
-- [ ] Set up ArgoCD - Ansible bootstrap
-    - Port forward from K9s to set up from laptop
+    - [ ] Set up ArgoCD - Ansible bootstrap
+        - [ ] See if applications can be defined in code
 - [ ] Set up Tailscale w/ Argo in K8s cluster
-    - [X] K8s operator
-        - Set up by manually inputting Helm chart into Argo UI w/ client ID/secret
-            - Would be nice to make this more automatic
-    - [x] Test w/ Foundry service
     - [X] Service annotation
     - [ ] MFA
-- [ ] Update board
-- [ ] Make network/arch diagram
-
 - [ ] Make Argo available to Tailscale
+## Docs
+- [ ] Make network/arch diagram
+- [ ] Update board
 
+## Applications
 - [ ] Look at [Semaphore](https://semaphoreui.com)
-
-- [X] Expose Foundry w/ Cloudflare
-- [X] Close Foundry behind CF Application
 - [ ] Figure out permanent Foundry (k8s) storage
-
 - [ ] Homebox - inventory
 
 # Architecture Notes
