@@ -18,7 +18,8 @@
 - [X] Close Foundry behind CF Application
 - [ ] Figure out permanent Foundry (k8s) storage
 
-- [ ] Migrate to NixOS
+- [ ] Migrate to NixOS ???
+- [ ] Write Ansible playbook to bootstrap a server
 
 # Architecture Notes
 ## Networking
