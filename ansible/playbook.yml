@@ -1,0 +1,8 @@
+- name: Bootstrap Server
+  hosts: myhosts
+  tasks:
+    - name: Ping my hosts
+      ansible.builtin.ping:
+    # Will automatically pull and merge kubeconfig
+    - name: Import kube cluster playbook
+      ansible.builtin.import_playbook: k3s-ansible/playbooks/site.yml
