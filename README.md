@@ -1,10 +1,11 @@
 # TODO
 ## Infra
 - [ ] Write Ansible playbook to bootstrap a server
-    - [ ] K3s
     - [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
+    - [ ] K3s
     - [ ] Set up ArgoCD - Ansible bootstrap
         - [ ] See if applications can be defined in code
+            - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
 - [ ] Set up Tailscale w/ Argo in K8s cluster
     - [X] Service annotation
     - [ ] MFA
