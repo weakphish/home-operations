@@ -1,6 +1,9 @@
 # TODO
+- [ ] Write Ansible playbook to bootstrap a server
+    - [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
+
 - [X] Remove non-foundry Cloudflare
-- [X] Set up ArgoCD - Pulumi bootstrap
+- [ ] Set up ArgoCD - Ansible bootstrap
     - Port forward from K9s to set up from laptop
 - [ ] Set up Tailscale w/ Argo in K8s cluster
     - [X] K8s operator
@@ -14,12 +17,13 @@
 
 - [ ] Make Argo available to Tailscale
 
+- [ ] Look at [Semaphore](https://semaphoreui.com)
+
 - [X] Expose Foundry w/ Cloudflare
 - [X] Close Foundry behind CF Application
 - [ ] Figure out permanent Foundry (k8s) storage
 
-- [ ] Write Ansible playbook to bootstrap a server
-- [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
+- [ ] Homebox - inventory
 
 # Architecture Notes
 ## Networking
