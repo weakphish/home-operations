@@ -18,6 +18,8 @@
 - [X] Close Foundry behind CF Application
 - [ ] Figure out permanent Foundry (k8s) storage
 
+- [ ] Migrate to NixOS
+
 # Architecture Notes
 ## Networking
 - Cloudflare for 'application' access - in my case, Foundry for DnD sessions
