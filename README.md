@@ -20,6 +20,7 @@
 
 - [ ] Migrate to NixOS ???
 - [ ] Write Ansible playbook to bootstrap a server
+- [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
 
 # Architecture Notes
 ## Networking
