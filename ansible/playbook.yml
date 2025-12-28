@@ -1,8 +1,27 @@
-- name: Bootstrap Server
-  hosts: myhosts
+# Will automatically pull and merge kubeconfig
+- name: Import kube cluster playbook
+  ansible.builtin.import_playbook: k3s.orchestration.site
+
+- name: Install Dependencies
+  hosts: k3s_cluster
+  become: true
   tasks:
     - name: Ping my hosts
       ansible.builtin.ping:
-    # Will automatically pull and merge kubeconfig
-    - name: Import kube cluster playbook
-      ansible.builtin.import_playbook: k3s-ansible/playbooks/site.yml
+    - name: Install Helm
+      ansible.builtin.apt:
+        name: helm
+        state: present
+- name: Install ArgoCD
+  hosts: k3s_cluster
+  tasks:
+    - name: Add chart repo
+      kubernetes.core.helm_repository:
+        repo_url: "https://argoproj.github.io/argo-helm"
+        name: argo
+    - name: Install ArgoCD Helm Chart
+      kubernetes.core.helm:
+        name: argo
+        chart_ref: argo/argo-cd
+        release_namespace: argo-cd
+        create_namespace: true

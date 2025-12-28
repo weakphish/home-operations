@@ -1,10 +1,11 @@
 # TODO
 ## Infra
-- [ ] Write Ansible playbook to bootstrap a server
+- [x] Write Ansible playbook to bootstrap a server
     - [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
-    - [ ] K3s
-    - [ ] Set up ArgoCD in declarative manner
-        - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
+    - [x] K3s
+- [ ] Set up ArgoCD in declarative manner
+    - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
+    - [x] Apply w/ Ansible during bootstrap?
 - [ ] Set up Tailscale w/ Argo in K8s cluster
     - [X] Service annotation
     - [ ] MFA
@@ -17,6 +18,11 @@
 - [ ] Look at [Semaphore](https://semaphoreui.com)
 - [ ] Figure out permanent Foundry (k8s) storage
 - [ ] Homebox - inventory
+
+# Install & Setup Notes
+## Ansible
+- Seems to require `export ANSIBLE_BECOME_EXE=sudo.ws` due to [this issue](https://github.com/ansible/ansible/issues/85837)
+- Run with `ansible-playbook playbook.yml -i inventory.yml -kK` where the flags have you manually input SSH password
 
 # Architecture Notes
 ## Networking
