@@ -10,7 +10,9 @@
     - [X] Service annotation
     - [ ] MFA
 - [ ] Make Argo available to Tailscale
+- [ ] Have Argo [manage itself](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#manage-argo-cd-using-argo-cd)
 ## Docs
+- [ ] Document repo structure in README
 - [ ] Make network/arch diagram
 - [ ] Update board
 
@@ -23,6 +25,10 @@
 ## Ansible
 - Seems to require `export ANSIBLE_BECOME_EXE=sudo.ws` due to [this issue](https://github.com/ansible/ansible/issues/85837)
 - Run with `ansible-playbook playbook.yml -i inventory.yml -kK` where the flags have you manually input SSH password
+
+## Argo
+- Have to manually configure repo connection / secret
+    - Could bypass with [SealedSecrets](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#repositories), but don't feel like it yet
 
 # Architecture Notes
 ## Networking
