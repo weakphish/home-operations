@@ -9,10 +9,10 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: local-storage
+  storageClassName: manual
   capacity:
     storage: 50Gi
-  local:
+  hostPath:
     path: /home/jack/foundrydata
   persistentVolumeReclaimPolicy: Retain
   accessModes:
