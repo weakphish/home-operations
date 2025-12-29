@@ -3,11 +3,11 @@ kind: PersistentVolumeClaim
 metadata:
   labels:
     io.kompose.service: foundry-claim0
-  name: foundry-claim0
+  name: foundry-claim
   namespace: default
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gb
+      storage: 50Gi
