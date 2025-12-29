@@ -1,13 +1,13 @@
+# https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  labels:
-    io.kompose.service: foundry-claim0
   name: foundry-claim
   namespace: default
 spec:
+  storageClass: manual
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
+      storage: 25Gi
