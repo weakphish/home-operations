@@ -30,7 +30,6 @@ spec:
       containers:
         - name: foundry-container
           hostname: foundry
-          restartPolicy: Always
           volumeMounts:
             - mountPath: "/data"
               name: foundry-pv-storage
