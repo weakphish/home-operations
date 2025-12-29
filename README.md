@@ -30,6 +30,9 @@
 - Have to manually configure repo connection / secret
     - Could bypass with [SealedSecrets](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#repositories), but don't feel like it yet
 
+## Foundry Service
+- Need to manually create foundry-creds secret
+
 # Architecture Notes
 ## Networking
 - Cloudflare for 'application' access - in my case, Foundry for DnD sessions
