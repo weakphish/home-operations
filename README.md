@@ -10,6 +10,9 @@
 ## Foundry Service
 - Need to manually create foundry-creds secret
 
+## Cloudflared Service 
+- Need to manually create tunnel-token secret
+
 # Repo Structure
 - `ansible/` - Contains Ansible playbook to bootstrap K3s with ArgoCD onto a new machine
 - `argo/` - Contains Argo resource definitions

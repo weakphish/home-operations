@@ -4,6 +4,7 @@ metadata:
   labels:
     io.kompose.service: foundry-claim0
   name: foundry-claim0
+  namespace: default
 spec:
   accessModes:
     - ReadWriteOnce
