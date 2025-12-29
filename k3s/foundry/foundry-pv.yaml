@@ -17,3 +17,11 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   accessModes:
     - ReadWriteOnce
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - new-bermuda
