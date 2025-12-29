@@ -43,7 +43,7 @@
 - [x] Write Ansible playbook to bootstrap a server
     - [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
     - [x] K3s
-- [ ] Set up ArgoCD in declarative manner
+- [x] Set up ArgoCD in declarative manner
     - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
     - [x] Apply w/ Ansible during bootstrap?
 - [ ] Set up Tailscale w/ Argo in K8s cluster
@@ -57,8 +57,8 @@
 - [ ] Update board
 
 ## Applications
-- [ ] Look at [Semaphore](https://semaphoreui.com)
 - [ ] Figure out permanent Foundry (k8s) storage
+- [ ] Look at [Semaphore](https://semaphoreui.com)
 - [ ] Homebox - inventory
 - [ ] Wingfit
 - [ ] A [KMS](https://github.com/awesome-selfhosted/awesome-selfhosted?tab=readme-ov-file#knowledge-management-tools)
