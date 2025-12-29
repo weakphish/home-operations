@@ -23,34 +23,34 @@ spec:
       labels:
         io.kompose.service: foundry
     spec:
+      volumes:
+        - name: foundry-pv-storage
+          persistentVolumeClaim:
+            claimName: foundry-claim
       containers:
-        - env:
-            - name: FOUNDRY_ADMIN_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: foundry-creds
-                  key: admin-pw
-            - name: FOUNDRY_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: foundry-creds
-                  key: password
-            - name: FOUNDRY_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: foundry-creds
-                  key: username
+        - name: foundry-container
+          hostname: foundry
+          restartPolicy: Always
+          volumeMounts:
+            - mountPath: "/data"
+              name: foundry-pv-storage
           image: felddy/foundryvtt:13
-          name: foundry
           ports:
             - containerPort: 30000
               protocol: TCP
-          volumeMounts:
-            - mountPath: /data
-              name: foundry-claim0
-      hostname: foundry
-      restartPolicy: Always
-      volumes:
-        - name: foundry-claim
-          persistentVolumeClaim:
-            claimName: foundry-claim
+          env:
+              - name: FOUNDRY_ADMIN_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: foundry-creds
+                    key: admin-pw
+              - name: FOUNDRY_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: foundry-creds
+                    key: password
+              - name: FOUNDRY_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: foundry-creds
+                    key: username
