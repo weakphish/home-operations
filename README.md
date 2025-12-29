@@ -59,6 +59,14 @@
 - [ ] Look at [Semaphore](https://semaphoreui.com)
 - [ ] Figure out permanent Foundry (k8s) storage
 - [ ] Homebox - inventory
+- [ ] Wingfit
+- [ ] A [KMS](https://github.com/awesome-selfhosted/awesome-selfhosted?tab=readme-ov-file#knowledge-management-tools)
+    - Also see [note-taking section](https://github.com/awesome-selfhosted/awesome-selfhosted?tab=readme-ov-file#note-taking--editors)
+    - Use for DnD campaigns or whatnot, not neccesarily Notes.app replacement
+- [ ] [Dumbware](https://dumbware.io)
+- [ ] [Yamtrack](https://github.com/FuzzyGrim/Yamtrack)
+- [ ] [ActualBudget](https://actualbudget.org)
+- [ ] [iHateMoney](https://ihatemoney.org/) - shared expense tracker
 
 # Resources / ideas
 - [Awesome Selfhosting](https://github.com/awesome-selfhosted/awesome-selfhosted)
