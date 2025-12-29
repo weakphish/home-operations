@@ -32,6 +32,7 @@
     - Creates zero-trust application
 - Configure and deploy ArgoCD helm chart 
 - Bootstrap K8s cluster basically
+- There is some overlap between Pulumi and Argo, as the Cloudflare resource creates a k8s secret to be used by the cloudflared deployment
 
 ## ArgoCD
 - Continuous delivery of k8s resources, repo as souce-of-truth
@@ -67,6 +68,8 @@
 - [ ] [Yamtrack](https://github.com/FuzzyGrim/Yamtrack)
 - [ ] [ActualBudget](https://actualbudget.org)
 - [ ] [iHateMoney](https://ihatemoney.org/) - shared expense tracker
+- [ ] [Glance dashboard](https://github.com/glanceapp/glance)
+- [ ] [Recipe manager](https://github.com/awesome-selfhosted/awesome-selfhosted?tab=readme-ov-file#recipe-management)
 
 # Resources / ideas
 - [Awesome Selfhosting](https://github.com/awesome-selfhosted/awesome-selfhosted)
