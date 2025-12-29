@@ -5,7 +5,7 @@ metadata:
   name: foundry-claim
   namespace: default
 spec:
-  storageClass: manual
+  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
