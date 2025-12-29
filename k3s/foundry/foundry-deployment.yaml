@@ -51,6 +51,6 @@ spec:
       hostname: foundry
       restartPolicy: Always
       volumes:
-        - name: foundry-claim0
+        - name: foundry-claim
           persistentVolumeClaim:
-            claimName: foundry-claim0
+            claimName: foundry-claim
