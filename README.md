@@ -51,10 +51,14 @@
     - [ ] MFA
 - [ ] Make Argo available to Tailscale
 - [ ] Have Argo [manage itself](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#manage-argo-cd-using-argo-cd)
+
 ## Docs
 - [X] Document repo structure in README
 - [ ] Make network/arch diagram
 - [ ] Update board
+
+## Hardware
+- [ ] Get a NAS for backups
 
 ## Applications
 - [ ] Figure out permanent Foundry (k8s) storage
