@@ -68,7 +68,8 @@
 - [ ] Get a NAS for backups
 
 ## Applications
-- [ ] Figure out permanent Foundry (k8s) storage
+- [X] Figure out permanent Foundry (k8s) storage
+- [ ] [Glance dashboard](https://github.com/glanceapp/glance)
 - [ ] Look at [Semaphore](https://semaphoreui.com)
 - [ ] Homebox - inventory
 - [ ] Wingfit
@@ -79,7 +80,6 @@
 - [ ] [Yamtrack](https://github.com/FuzzyGrim/Yamtrack)
 - [ ] [ActualBudget](https://actualbudget.org)
 - [ ] [iHateMoney](https://ihatemoney.org/) - shared expense tracker
-- [ ] [Glance dashboard](https://github.com/glanceapp/glance)
 - [ ] [Recipe manager](https://github.com/awesome-selfhosted/awesome-selfhosted?tab=readme-ov-file#recipe-management)
 
 # Resources / ideas
