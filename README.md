@@ -13,6 +13,10 @@
 ## Cloudflared Service 
 - Need to manually create tunnel-token secret
 
+## Tailscaled
+- Had to manually add OAuth client ID / secret in Argo UI for the Helm chart
+    - Probably a better way to do this
+
 # Repo Structure
 - `ansible/` - Contains Ansible playbook to bootstrap K3s with ArgoCD onto a new machine
 - `argo/` - Contains Argo resource definitions
@@ -49,8 +53,11 @@
 - [ ] Set up Tailscale w/ Argo in K8s cluster
     - [X] Service annotation
     - [ ] MFA
-- [ ] Make Argo available to Tailscale
+- [ ] Add server itself to [Tailscale](https://login.tailscale.com/admin/machines/new-linux)
+- [x] Make Argo available to Tailscale
+    - [ ] Fix HTTPS
 - [ ] Have Argo [manage itself](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#manage-argo-cd-using-argo-cd)
+- [ ] [Tailnet Lock](https://tailscale.com/kb/1226/tailnet-lock)
 
 ## Docs
 - [X] Document repo structure in README
