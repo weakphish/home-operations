@@ -3,26 +3,9 @@
 - Seems to require `export ANSIBLE_BECOME_EXE=sudo.ws` due to [this issue](https://github.com/ansible/ansible/issues/85837)
 - Run with `ansible-playbook playbook.yml -i inventory.yml -kK` where the flags have you manually input SSH password
 
-## Argo
-- Have to manually configure repo connection / secret
-    - Could bypass with [SealedSecrets](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#repositories), but don't feel like it yet
-
-## Foundry Service
-- Need to manually create foundry-creds secret
-
-## Cloudflared Service 
-- Need to manually create tunnel-token secret
-
-## Tailscaled
-- Had to manually add OAuth client ID / secret in Argo UI for the Helm chart
-    - Probably a better way to do this
-
 # Repo Structure
-- `ansible/` - Contains Ansible playbook to bootstrap K3s with ArgoCD onto a new machine
-- `argo/` - Contains Argo resource definitions
-    - `argo/applications/` - Resource definition for Argo applications, mostly referencing the resources mirrored in the `k3s` directory
-- `k3s/` - Kubernetes resource definitions, grouped into directory by their application
-- `pulumi` - IaC for managing cloud resources - in my case, Cloudflare tunnels and zero-trust applications
+- `ansible/` - Contains Ansible playbook to bootstrap K3s
+- `pulumi` - IaC for managing cloud & k8s resources
 
 # Architecture Notes
 ## Networking
@@ -34,30 +17,20 @@
 - Used to manage Cloudflare resources
     - Creates tunnel & DNS records
     - Creates zero-trust application
-- Configure and deploy ArgoCD helm chart 
+- Also creates Kubernetes resources, generally a file per application
 - Bootstrap K8s cluster basically
-- There is some overlap between Pulumi and Argo, as the Cloudflare resource creates a k8s secret to be used by the cloudflared deployment
-
-## ArgoCD
-- Continuous delivery of k8s resources, repo as souce-of-truth
-- Cloudflared tunnel deployment
 
 # TODO
 ## Infra
 - [x] Write Ansible playbook to bootstrap a server
     - [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
     - [x] K3s
-- [x] Set up ArgoCD in declarative manner
-    - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/
-    - [x] Apply w/ Ansible during bootstrap?
-- [ ] Set up Tailscale w/ Argo in K8s cluster
-    - [X] Service annotation
+- [ ] Set up Tailscale w/ Pulumi in K8s cluster
+    - [ ] Service annotation
     - [ ] MFA
 - [ ] Add server itself to [Tailscale](https://login.tailscale.com/admin/machines/new-linux)
-- [x] Make Argo available to Tailscale
-    - [ ] Fix HTTPS
-- [ ] Have Argo [manage itself](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#manage-argo-cd-using-argo-cd)
 - [ ] [Tailnet Lock](https://tailscale.com/kb/1226/tailnet-lock)
+- [ ] ==Migrate to Pulumi from Argo==
 
 ## Docs
 - [X] Document repo structure in README

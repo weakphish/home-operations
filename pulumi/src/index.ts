@@ -1,8 +1,15 @@
 import * as pulumi from "@pulumi/pulumi";
-import * as cf from "./cloudflare";
+import * as cf from "./cloudflare-cloud";
+import * as cfd from "./cloudflared";
+import * as foundry from "./foundry";
 import { InfrastructureConfig } from "./types";
 
-const config = new pulumi.Config();
-const data = config.requireObject<InfrastructureConfig>("infrastructure");
+export = async () => {
+    const config = new pulumi.Config();
+    const data = config.requireObject<InfrastructureConfig>("infrastructure");
 
-cf.configureCloudflare(data);
+    const tunnelToken = await cf.configureCloudflare(data);
+    cfd.createCloudflaredDeployment(data, tunnelToken);
+
+    foundry.createFoundryResources(data.foundry);
+};

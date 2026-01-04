@@ -12,16 +12,3 @@
       ansible.builtin.apt:
         name: helm
         state: present
-- name: Install ArgoCD
-  hosts: k3s_cluster
-  tasks:
-    - name: Add chart repo
-      kubernetes.core.helm_repository:
-        repo_url: "https://argoproj.github.io/argo-helm"
-        name: argo
-    - name: Install ArgoCD Helm Chart
-      kubernetes.core.helm:
-        name: argo
-        chart_ref: argo/argo-cd
-        release_namespace: argo-cd
-        create_namespace: true

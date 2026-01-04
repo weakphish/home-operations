@@ -3,10 +3,12 @@ import * as k8s from "@pulumi/kubernetes";
 import * as pulumi from "@pulumi/pulumi";
 import { InfrastructureConfig } from "./types";
 import { ZeroTrustAccessApplicationPolicyIncludeEmail } from "@pulumi/cloudflare/types/input";
+import { Secret } from "@pulumi/kubernetes/core/v1";
 
 /**
  * Configure Cloudflare resources - a tunnel, application and DNS records
  * @param data The configuration for the infrastructure in a typed object
+ * @returns The tunnel token secret object created
  */
 export function configureCloudflare(data: InfrastructureConfig) {
     // Configurable settings
@@ -69,11 +71,13 @@ export function configureCloudflare(data: InfrastructureConfig) {
         ],
     });
 
-    configureCloudflareTokenSecret(data.cloudflare.tunnelToken);
+    return configureCloudflareTokenSecret(data.cloudflare.tunnelToken);
 }
 
-async function configureCloudflareTokenSecret(token: pulumi.Input<string>) {
-    const tunnelToken = new k8s.core.v1.Secret("tunnelToken", {
+async function configureCloudflareTokenSecret(
+    token: pulumi.Input<string>,
+): Promise<Secret> {
+    return new k8s.core.v1.Secret("tunnelToken", {
         metadata: {
             name: "tunnel-token",
         },
