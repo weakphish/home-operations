@@ -8,9 +8,13 @@ import { Secret } from "@pulumi/kubernetes/core/v1";
 /**
  * Configure Cloudflare resources - a tunnel, application and DNS records
  * @param data The configuration for the infrastructure in a typed object
+ * @param foundryService The Foundry Kubernetes service to reference in tunnel config
  * @returns The tunnel token secret object created
  */
-export function configureCloudflare(data: InfrastructureConfig) {
+export function configureCloudflare(
+    data: InfrastructureConfig,
+    foundryService: k8s.core.v1.Service
+) {
     // Configurable settings
     const accountId = data.cloudflare.accountId;
     const zoneId = data.cloudflare.zoneId;
@@ -37,7 +41,7 @@ export function configureCloudflare(data: InfrastructureConfig) {
         config: {
             ingresses: [
                 {
-                    service: "http://foundry:30000",
+                    service: pulumi.interpolate`http://${foundryService.metadata.name}:30000`,
                     hostname: pulumi.interpolate`foundry.${domain}`,
                 },
                 {
