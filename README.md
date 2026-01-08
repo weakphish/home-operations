@@ -8,9 +8,74 @@
 - `pulumi` - IaC for managing cloud & k8s resources
 
 # Architecture Notes
+
+## Diagram
+
+```mermaid
+flowchart TB
+    subgraph Internet["Internet"]
+        Users["D&D Players"]
+    end
+
+    subgraph Cloudflare["Cloudflare"]
+        DNS["DNS<br/>foundry.domain.com"]
+        ZT["Zero Trust<br/>Email Auth"]
+        Tunnel["Cloudflare Tunnel"]
+    end
+
+    subgraph Tailscale["Tailscale Network"]
+        TS_Client["Tailscale Client<br/>(Admin/Private Access)"]
+    end
+
+    subgraph Server["Server: new-bermuda"]
+        subgraph K3s["K3s Cluster"]
+            subgraph Deployments["Deployments"]
+                CFD["cloudflared<br/>(2 replicas)"]
+                Foundry["Foundry VTT<br/>:30000"]
+                Glance["Glance Dashboard<br/>:8080"]
+            end
+
+            subgraph Storage["Storage"]
+                PV["PersistentVolume<br/>/home/jack/foundrydata"]
+            end
+
+            subgraph Secrets["Secrets"]
+                TunnelToken["tunnel-token"]
+                FoundryCreds["foundry-creds"]
+            end
+        end
+    end
+
+    subgraph Management["Management Tools"]
+        Ansible["Ansible<br/>K3s Bootstrap"]
+        Pulumi["Pulumi<br/>IaC"]
+    end
+
+    %% Internet flow
+    Users --> DNS
+    DNS --> ZT
+    ZT --> Tunnel
+    Tunnel --> CFD
+    CFD --> Foundry
+
+    %% Tailscale flow
+    TS_Client -.->|"Private Access"| Foundry
+    TS_Client -.->|"Private Access"| Glance
+
+    %% Internal connections
+    CFD --> TunnelToken
+    Foundry --> FoundryCreds
+    Foundry --> PV
+
+    %% Management
+    Ansible -.->|"Bootstrap"| K3s
+    Pulumi -.->|"Manage"| Cloudflare
+    Pulumi -.->|"Manage"| K3s
+```
+
 ## Networking
 - Cloudflare for 'application' access - in my case, Foundry for DnD sessions
-- Tailscale for everything else 
+- Tailscale for everything else
     - [Tailscale K8s operator pod](https://tailscale.com/kb/1236/kubernetes-operator#setup)
 
 ## Pulumi
@@ -34,8 +99,9 @@
 
 ## Docs
 - [X] Document repo structure in README
-- [ ] Make network/arch diagram
+- [x] Make network/arch diagram
 - [ ] Update board
+- [ ] Sanitize and make repo public
 
 ## Hardware
 - [ ] Get a NAS for backups
