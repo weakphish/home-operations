@@ -99,6 +99,9 @@ function createFoundryService(
                 labels: {
                     "io.kompose.service": "foundry",
                 },
+                annotations: {
+                    "tailscale.com/expose": "true",
+                },
             },
             spec: {
                 selector: {
@@ -133,6 +136,12 @@ function createFoundryDeployment(
                 namespace: "default",
                 labels: {
                     "io.kompose.service": "foundry",
+                },
+                annotations: {
+                    "glance/name": "Foundry",
+                    "glance/icon": "di:foundry-vtt",
+                    "glance/url": "https://foundry.weakphi.sh",
+                    "glance/id": "foundry",
                 },
             },
             spec: {

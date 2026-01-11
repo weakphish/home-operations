@@ -4,6 +4,11 @@ config:
   cloudflare:apiToken:
     secure: v1:FRgKeMexG/q/qXmg:sXV61pl6B8rxs/sGh7t5YBEqB0Gkwbm1Q5H7dAc/GJ4ipXTjCBH76cEZFi0un6ImTz1Uq4ZGY88=
   infrastructure:infrastructure:
+    tailscale:
+      clientId:
+        secure: v1:enILHeBhothOCtt3:00yre34Dlc40vlpwrCXJZikRomXxxceTE8k6wOF6OuNp
+      clientSecret:
+        secure: v1:jNmLHY5p7HA3j5GK:Ar4GT9+tWK3rK+o1tglmr2eXRZubZrQAKFBVSkg3MctXSTcChT5nyELAZsferoO2IhO6N6KLMDqC5wZvIieTLNAWVrkzEDJJTL3dRwMzKw==
     cloudflare:
       accountId:
         secure: v1:DaVl62PUPK6n71cI:79WwTAlXoXr7wzygyOqnVjhGZhxzsh0NZBUYfkBtOECHZ08tXnLkCFTTKoq3FWG5
@@ -11,6 +16,10 @@ config:
         - jack@weakphi.sh
         - travis@mehlinger.me
         - thomas.beard2@yahoo.com
+        - james@snow.engineer
+        - paddles_bivalve_4j@icloud.com
+        - jacob@roadnottaken2718.com
+        - aaron.tygart@gmail.com
       tunnelToken:
         secure: v1:5iOCfZzdJcSRczJY:EWL6SFfiDgvfZi94GbGvYcUNVs8ICKG4iSthMnOd29sSxnxdFw8AUGLtqt9XpLrm+zcUEa1n5OSSzzTP22wlFHXkEB3P7ZhHbntskW5BA1MurvhF6DIwSrp+w58MesgC/Gh5H5tJF/LvdciZro3R0P5v2x2/9K8Dn/LjBNPy6xppkB2WWs0nO4GmF/I+TeWeIa1iVyIHZjRzGKX5Yaz3eH5eNKcpXzgt9z/52qLoP0NxwFrEP1T/5uDNqLUC6kJI/2zTx4xAfmB0p2pboSqZRFVGeY3Z3PLm33byxJdZDGy7kvYiIaCnO0KHnA8pYxKDlX91tNMYfVgK7bcHDd9k6Q==
       zoneId:
@@ -24,3 +33,75 @@ config:
         secure: v1:WBApCkElUDZKbNwp:24Eg1N9MTBU93rjZ6iB3M6Mc/I6lHlXctQ==
       username:
         secure: v1:G08V06DOpUT2STus:iP+gtUabl6oKsfQF2CfPc3yRX1twSrkG
+    glance:
+      glanceConfig:
+        server:
+          port: 8080
+          base-url: /
+        theme:
+          # Gruvbox
+          background-color: 0 0 16
+          primary-color: 43 59 81
+          positive-color: 61 66 44
+          negative-color: 6 96 59
+        pages:
+          - name: Home
+            columns:
+              - size: small
+                widgets:
+                  - type: calendar
+                    first-day-of-week: sunday
+                  - type: weather
+                    units: imperial
+                    hour-format: 24h
+                    location: Raleigh, North Carolina
+                  - type: rss
+                    limit: 10
+                    collapse-after: 3
+                    cache: 12h
+                    feeds:
+                      - url: https://news.ycombinator.com/rss
+                        title: Hacker News
+                      - url: https://lobste.rs/rss
+                        title: Lobsters
+              - size: full
+                widgets:
+                  - type: server-stats
+                    servers:
+                      - type: local
+                        name: Services
+                  - type: extension
+                    url: http://glance-k8s/extension/nodes
+                    allow-potentially-dangerous-html: true
+                    cache: 1s
+                  - type: extension
+                    url: http://glance-k8s/extension/apps
+                    allow-potentially-dangerous-html: true
+                    cache: 1s
+
+                    parameters:
+                      # Parameters are sent to the extension as query parameters.
+                      # Since there is no browser or proxy between glance and glance-k8s there _should_ not be a size limit for the parameters,
+                      # apart from default buffer sizes.
+                      # But keep that in mind, when supplying large strings.
+
+                      # Show only workloads, that match an expression.
+                      # See: https://github.com/expr-lang/expr
+                      #
+                      # Environment:
+                      #   namespace    Namespace of the workload
+                      #   name         Name of the workload
+                      #   annotations  Map of annotations
+                      show-if: |
+                        namespace == "default" and
+                        ("glance/hide" not in annotations || annotations["glance/hide"] != "true")
+
+                      # You can also supply multiple expressions, which will evaluate to a logical conjunction (AND).
+                      # show-if:
+                      #   - |
+                      #     namespace != "kube-system"
+                      #   - |
+                      #     ("glance/hide" not in annotations || annotations["glance/hide"] != "true")
+              - size: full
+                widgets:
+                  - type: to-do

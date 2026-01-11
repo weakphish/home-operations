@@ -84,18 +84,21 @@ flowchart TB
     - Creates zero-trust application
 - Also creates Kubernetes resources, generally a file per application
 - Bootstrap K8s cluster basically
+- NOTE: in the future, probably will get more Hardware
+    - perhaps a stack per machine? maybe? that may not make sense though if a cluster is machine agnostic
 
 # TODO
 ## Infra
 - [x] Write Ansible playbook to bootstrap a server
     - [Ref](https://www.reddit.com/r/selfhosted/s/ryBd8BYD8Y)
     - [x] K3s
-- [ ] Set up Tailscale w/ Pulumi in K8s cluster
-    - [ ] Service annotation
-    - [ ] MFA
+- [x] Set up Tailscale w/ Pulumi in K8s cluster
+    - [x] Service annotation
+    - [x] MFA
 - [ ] Add server itself to [Tailscale](https://login.tailscale.com/admin/machines/new-linux)
 - [ ] [Tailnet Lock](https://tailscale.com/kb/1226/tailnet-lock)
-- [ ] ==Migrate to Pulumi from Argo==
+- [X] ==Migrate to Pulumi from Argo==
+- [ ] ==Split Pulumi stacks out into separate stacks==
 
 ## Docs
 - [X] Document repo structure in README
