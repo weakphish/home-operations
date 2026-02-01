@@ -1,0 +1,13 @@
+{
+    "name": "cloudflare",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^18",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@pulumi/cloudflare": "^6.11.0",
+        "@pulumi/kubernetes": "^4.24.1",
+        "@pulumi/pulumi": "^3.113.0"
+    }
+}

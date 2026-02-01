@@ -1,0 +1,12 @@
+config:
+  foundry:foundry:
+    adminKey:
+      secure: AAABALyiYRAiAMoLPIEqhviqs442Fta/2Rm2RvIbpT/2YdWRH5WKKRph
+    username:
+      secure: AAABAATUt7U+Lu6dHmjVuy4DHWMLhdYN/AXKtjpMj3pvvvTY+LMx77Q=
+    pw:
+      secure: AAABAPT9YUs01F8rKoaakKe71UDMb44A6OhXoh1v22tNDD+PFcJDuQ0=
+  foundry:domain:
+    secure: AAABAHK9olH3A6m+mH0FHCeaSurRB3hur2Cc0+qES1AP2c21HyN14uRI
+  foundry:nodeName:
+    secure: AAABADftzMK+wp6qf+7GOsJJivk2mSZRlXjzep5kTF+IeYb46rdQnZx/AA==

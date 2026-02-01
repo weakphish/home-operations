@@ -1,0 +1,10 @@
+name: satisfactory
+description: Satisfactory dedicated game server deployment
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: kubernetes-typescript

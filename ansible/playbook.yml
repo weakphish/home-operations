@@ -1,0 +1,14 @@
+# Will automatically pull and merge kubeconfig
+- name: Import kube cluster playbook
+  ansible.builtin.import_playbook: k3s.orchestration.site
+
+- name: Install Dependencies
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Ping my hosts
+      ansible.builtin.ping:
+    - name: Install Helm
+      ansible.builtin.apt:
+        name: helm
+        state: present

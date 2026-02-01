@@ -1,0 +1,10 @@
+name: monitoring
+description: Kubernetes monitoring stack with Prometheus, Grafana, and Alertmanager
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: helm-kubernetes-typescript

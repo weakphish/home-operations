@@ -1,0 +1,73 @@
+config:
+  glance:glanceConfig:
+    glanceConfig:
+      server:
+        port: 8080
+        base-url: /
+      theme:
+        # Gruvbox
+        background-color: 0 0 16
+        primary-color: 43 59 81
+        positive-color: 61 66 44
+        negative-color: 6 96 59
+      pages:
+        - name: Home
+          columns:
+            - size: small
+              widgets:
+                - type: calendar
+                  first-day-of-week: sunday
+                - type: weather
+                  units: imperial
+                  hour-format: 24h
+                  location: Raleigh, North Carolina
+                - type: rss
+                  limit: 10
+                  collapse-after: 3
+                  cache: 12h
+                  feeds:
+                    - url: https://news.ycombinator.com/rss
+                      title: Hacker News
+                    - url: https://lobste.rs/rss
+                      title: Lobsters
+            - size: full
+              widgets:
+                - type: server-stats
+                  servers:
+                    - type: local
+                      name: Services
+                - type: extension
+                  url: http://glance-k8s/extension/nodes
+                  allow-potentially-dangerous-html: true
+                  cache: 1s
+                - type: extension
+                  url: http://glance-k8s/extension/apps
+                  allow-potentially-dangerous-html: true
+                  cache: 1s
+
+                  parameters:
+                    # Parameters are sent to the extension as query parameters.
+                    # Since there is no browser or proxy between glance and glance-k8s there _should_ not be a size limit for the parameters,
+                    # apart from default buffer sizes.
+                    # But keep that in mind, when supplying large strings.
+
+                    # Show only workloads, that match an expression.
+                    # See: https://github.com/expr-lang/expr
+                    #
+                    # Environment:
+                    #   namespace    Namespace of the workload
+                    #   name         Name of the workload
+                    #   annotations  Map of annotations
+                    show-if: |
+                      namespace == "default" and
+                      ("glance/hide" not in annotations || annotations["glance/hide"] != "true")
+
+                    # You can also supply multiple expressions, which will evaluate to a logical conjunction (AND).
+                    # show-if:
+                    #   - |
+                    #     namespace != "kube-system"
+                    #   - |
+                    #     ("glance/hide" not in annotations || annotations["glance/hide"] != "true")
+            - size: full
+              widgets:
+                - type: to-do
