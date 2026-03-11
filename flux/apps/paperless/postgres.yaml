@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-postgres
+  namespace: default
+  labels:
+    app: paperless-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: paperless-postgres
+    spec:
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: paperless-postgres-claim
+      containers:
+        - name: postgres
+          image: postgres:16.12
+          ports:
+            - containerPort: 5432
+          env:
+            - { name: POSTGRES_DB, value: paperless }
+            - { name: POSTGRES_USER, value: paperless }
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: paperless-secret
+                  key: dbPassword
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+              subPath: pgdata
+          resources:
+            requests: { cpu: 50m, memory: 128Mi }
+            limits: { cpu: 500m, memory: 512Mi }

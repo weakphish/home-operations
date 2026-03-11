@@ -1,0 +1,13 @@
+{
+    "name": "tailscale",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^18",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@pulumi/kubernetes": "^4.0.0",
+        "@pulumi/pulumi": "^3.113.0",
+        "@pulumi/tailscale": "^0.24.0"
+    }
+}

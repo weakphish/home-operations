@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage
+  namespace: default
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  kubernetes.yaml: |
+    # REPLACE
+  settings.yaml: |
+    # REPLACE
+  services.yaml: |
+    # REPLACE
+  widgets.yaml: |
+    # REPLACE
+  bookmarks.yaml: |
+
+  custom.css: ""
+  custom.js: ""

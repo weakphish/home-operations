@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: donetick-data-claim
+  namespace: default
+spec:
+  storageClassName: manual
+  accessModes: [ReadWriteOnce]
+  selector: { matchLabels: { app: donetick } }
+  resources: { requests: { storage: 10Gi } }

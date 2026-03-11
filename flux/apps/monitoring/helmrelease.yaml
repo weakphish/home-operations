@@ -1,0 +1,77 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: default
+spec:
+  releaseName: prometheus
+  interval: 1h
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  values:
+    fullnameOverride: prometheus
+    grafana:
+      enabled: true
+      initChownData:
+        enabled: false
+      persistence:
+        enabled: true
+        size: 10Gi
+      service:
+        type: ClusterIP
+      admin:
+        existingSecret: grafana-admin
+        userKey: admin-user
+        passwordKey: admin-password
+      ingress:
+        enabled: true
+        ingressClassName: tailscale
+        annotations:
+          tailscale.com/hostname: grafana
+        hosts: [grafana]
+        tls:
+          - hosts: [grafana]
+      resources:
+        requests:
+          cpu: 20m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+    prometheus:
+      service:
+        type: ClusterIP
+      ingress:
+        enabled: true
+        ingressClassName: tailscale
+        annotations:
+          tailscale.com/hostname: prometheus
+        hosts: [prometheus]
+        tls:
+          - hosts: [prometheus]
+      prometheusSpec:
+        retention: 15d
+        serviceMonitorSelectorNilUsesHelmValues: false
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ReadWriteOnce]
+              resources:
+                requests:
+                  storage: 50Gi
+    alertmanager:
+      service:
+        type: ClusterIP
+      ingress:
+        enabled: true
+        ingressClassName: tailscale
+        annotations:
+          tailscale.com/hostname: alertmanager
+        hosts: [alertmanager]
+        tls:
+          - hosts: [alertmanager]

@@ -1,0 +1,6 @@
+name: cf-tunnel
+description: Cloudflare tunnel and Zero Trust configuration
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm

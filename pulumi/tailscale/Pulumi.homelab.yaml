@@ -1,0 +1,7 @@
+config:
+  tailscale:clientSecret:
+    secure: AAABAC9Y+Fq/Bg/lwdWfZFuxjOeNCBrOmJIoP8gmgEw38TpiCEzhBl5nckZuZsIixAI7A/YSztjn1eI+O9xYy9yXZYDaDweDs2tk2aGCCl547hyArPNfCfT30bad4YU=
+  tailscale:clientId:
+    secure: AAABAE+Gz0smr9c7taJPDAVBi8pTmjX7MFndaOSRikBz/ZLD4+zkQN5pP+LJLyRCEQ==
+  tailscale:adminUser:
+    secure: AAABAIPJxHp5Zw0JIniSny/7b6O4dUs8gxQBk/XPwVYhYHbWFACPUm62kCtEKU+V

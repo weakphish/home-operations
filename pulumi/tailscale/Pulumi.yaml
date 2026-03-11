@@ -1,0 +1,10 @@
+name: tailscale
+description: Tailscale operator and tailnet configuration (ACLs, DNS, HTTPS)
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: kubernetes-typescript

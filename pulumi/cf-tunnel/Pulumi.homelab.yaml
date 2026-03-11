@@ -1,0 +1,17 @@
+encryptionsalt: v1:fjmPxYo3UNM=:v1:WUTSsHNhyMD7eKgo:9KcwlrK1EimBBJ6Y0N6tYpfQyhBhvA==
+config:
+  cloudflare:apiToken:
+    secure: v1:cBn1QgapXO1agEKP:BzkY+0l7b02uPlro5+8jqNj4VXmLTibOFhMu7zQlAGePqN4kyK71Vranr/BeTWSObjt/VMYzcB4=
+  cf-tunnel:infrastructure:
+    accountId:
+      secure: v1:DaVl62PUPK6n71cI:79WwTAlXoXr7wzygyOqnVjhGZhxzsh0NZBUYfkBtOECHZ08tXnLkCFTTKoq3FWG5
+    tunnelToken:
+      secure: v1:5iOCfZzdJcSRczJY:EWL6SFfiDgvfZi94GbGvYcUNVs8ICKG4iSthMnOd29sSxnxdFw8AUGLtqt9XpLrm+zcUEa1n5OSSzzTP22wlFHXkEB3P7ZhHbntskW5BA1MurvhF6DIwSrp+w58MesgC/Gh5H5tJF/LvdciZro3R0P5v2x2/9K8Dn/LjBNPy6xppkB2WWs0nO4GmF/I+TeWeIa1iVyIHZjRzGKX5Yaz3eH5eNKcpXzgt9z/52qLoP0NxwFrEP1T/5uDNqLUC6kJI/2zTx4xAfmB0p2pboSqZRFVGeY3Z3PLm33byxJdZDGy7kvYiIaCnO0KHnA8pYxKDlX91tNMYfVgK7bcHDd9k6Q==
+    zoneId:
+      secure: v1:64jN2K15e2cKSrFs:Dpj8cRqR1mTqVU7lQLZj8xMaIBzn4txn4UfQhXs4rP/jGW4miEtj6j+10QHJwf7W
+    domain:
+      secure: v1:DH5VD5QbGUE6BD2x:rZpM1XDujBx8R4C7D6mmBq/3UxIFGWlT67I=
+  cf-tunnel:foundryEmails:
+    secure: v1:0WX3Jz0Z6avf9aMN:tU6NU3X5tLwsH4+6mbG0Zv7ZzBe6GxEeeJIbxVT9ELZBGFHA/mI4RpWffqD9vGIqLUe2QvBhE1MjPdOou6w13OVs53yo8J5eFSng2zaoM3RnJmMYFYTtCixM5mDcW/Thd7w+sam6eAgEXlwe/lS8DcA5gP6SEFrCDUI0S7xqWLfIhAKC0PQJJ9hX3lphfLPgG66YzhzEWd+SoHETVbPogBWacLMRtulzOtQy2mnRAKZl6p2cF2Ub0jkYXEBrQps=
+  cf-tunnel:nodeName:
+    secure: v1:kx/6bJiD9qIfLWjX:rjinrvmbuRQeHGeYbu24Y+cEBa3l1XWwIhjh

@@ -1,0 +1,28 @@
+# Will automatically pull and merge kubeconfig
+- name: Import kube cluster playbook
+  ansible.builtin.import_playbook: k3s.orchestration.site
+
+- name: Disable UFW on agent nodes
+  hosts: agent
+  become: true
+  tasks:
+    - name: Disable UFW
+      community.general.ufw:
+        state: disabled
+
+- name: Install Dependencies
+  hosts: k3s_cluster
+  become: true
+  tasks:
+    - name: Ping my hosts
+      ansible.builtin.ping:
+    - name: Install Helm (Debian/Ubuntu)
+      ansible.builtin.apt:
+        name: helm
+        state: present
+      when: ansible_os_family == "Debian"
+    - name: Install Helm (Arch)
+      community.general.pacman:
+        name: helm
+        state: present
+      when: ansible_os_family == "Archlinux"

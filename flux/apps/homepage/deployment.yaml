@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homepage
+  namespace: default
+  labels:
+    app.kubernetes.io/name: homepage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: homepage
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: homepage
+    spec:
+      serviceAccountName: homepage
+      automountServiceAccountToken: true
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: true
+      containers:
+        - name: homepage
+          image: ghcr.io/gethomepage/homepage:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: HOMEPAGE_ALLOWED_HOSTS
+              value: "homepage.pipefish-manta.ts.net"
+          volumeMounts:
+            - { name: config, mountPath: /app/config/kubernetes.yaml, subPath: kubernetes.yaml }
+            - { name: config, mountPath: /app/config/settings.yaml,   subPath: settings.yaml }
+            - { name: config, mountPath: /app/config/services.yaml,   subPath: services.yaml }
+            - { name: config, mountPath: /app/config/widgets.yaml,    subPath: widgets.yaml }
+            - { name: config, mountPath: /app/config/bookmarks.yaml,  subPath: bookmarks.yaml }
+            - { name: config, mountPath: /app/config/custom.css,      subPath: custom.css }
+            - { name: config, mountPath: /app/config/custom.js,       subPath: custom.js }
+          resources:
+            requests: { cpu: 10m, memory: 64Mi }
+            limits: { cpu: 100m, memory: 128Mi }
+      volumes:
+        - name: config
+          configMap:
+            name: homepage

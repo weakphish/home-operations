@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: portainer-data-pv
+  labels: { app: portainer, volume: data }
+spec:
+  storageClassName: manual
+  capacity: { storage: 10Gi }
+  hostPath: { path: /home/jack/portainer/data }
+  persistentVolumeReclaimPolicy: Retain
+  accessModes: [ReadWriteOnce]
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - { key: kubernetes.io/hostname, operator: In, values: [new-bermuda] }
