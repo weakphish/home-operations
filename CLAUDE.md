@@ -116,7 +116,7 @@ All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by defau
 | App | Type | Tailscale URL | Notes |
 |-----|------|--------------|-------|
 | tailscale | HelmRelease | — | Operator in `tailscale` namespace |
-| longhorn | HelmRelease | — | Block storage, `longhorn-system` namespace, `defaultReplicaCount: 1` |
+| longhorn | HelmRelease | `longhorn.pipefish-manta.ts.net` | Block storage, `longhorn-system` namespace, `defaultReplicaCount: 1` |
 | foundry | Deployment | `foundry.pipefish-manta.ts.net` | Also via CF tunnel |
 | homepage | Deployment | `homepage.pipefish-manta.ts.net` | K8s cluster discovery |
 | monitoring | HelmRelease | `grafana/prometheus/alertmanager.pipefish-manta.ts.net` | kube-prometheus-stack |
