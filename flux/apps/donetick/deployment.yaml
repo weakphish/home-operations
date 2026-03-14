@@ -47,3 +47,12 @@ spec:
           resources:
             requests: { cpu: 50m, memory: 64Mi }
             limits: { cpu: 500m, memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          readinessProbe:
+            httpGet: { path: /, port: 2021 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
