@@ -4,9 +4,8 @@ metadata:
   name: paperless-data-claim
   namespace: default
 spec:
-  storageClassName: manual
+  storageClassName: longhorn
   accessModes: [ReadWriteOnce]
-  selector: { matchLabels: { app: paperless, volume: data } }
   resources: { requests: { storage: 10Gi } }
 ---
 apiVersion: v1
@@ -15,9 +14,8 @@ metadata:
   name: paperless-media-claim
   namespace: default
 spec:
-  storageClassName: manual
+  storageClassName: longhorn
   accessModes: [ReadWriteOnce]
-  selector: { matchLabels: { app: paperless, volume: media } }
   resources: { requests: { storage: 50Gi } }
 ---
 apiVersion: v1
@@ -26,9 +24,8 @@ metadata:
   name: paperless-consume-claim
   namespace: default
 spec:
-  storageClassName: manual
+  storageClassName: longhorn
   accessModes: [ReadWriteOnce]
-  selector: { matchLabels: { app: paperless, volume: consume } }
   resources: { requests: { storage: 10Gi } }
 ---
 apiVersion: v1
@@ -37,9 +34,8 @@ metadata:
   name: paperless-postgres-claim
   namespace: default
 spec:
-  storageClassName: manual
+  storageClassName: longhorn
   accessModes: [ReadWriteOnce]
-  selector: { matchLabels: { app: paperless, volume: postgres } }
   resources: { requests: { storage: 10Gi } }
 ---
 apiVersion: v1
@@ -48,7 +44,6 @@ metadata:
   name: paperless-redis-claim
   namespace: default
 spec:
-  storageClassName: manual
+  storageClassName: longhorn
   accessModes: [ReadWriteOnce]
-  selector: { matchLabels: { app: paperless, volume: redis } }
   resources: { requests: { storage: 1Gi } }

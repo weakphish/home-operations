@@ -4,6 +4,6 @@ metadata:
   name: satisfactory-claim
   namespace: default
 spec:
-  storageClassName: manual
+  storageClassName: longhorn
   accessModes: [ReadWriteOnce]
   resources: { requests: { storage: 25Gi } }

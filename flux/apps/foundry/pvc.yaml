@@ -4,11 +4,8 @@ metadata:
   name: foundry-data-claim
   namespace: default
 spec:
-  storageClassName: manual
+  storageClassName: longhorn
   accessModes: [ReadWriteOnce]
-  selector:
-    matchLabels:
-      app: foundry
   resources:
     requests:
       storage: 50Gi
