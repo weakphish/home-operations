@@ -45,3 +45,14 @@ spec:
             limits:
               cpu: 1000m
               memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 30000
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            failureThreshold: 5
