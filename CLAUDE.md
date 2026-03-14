@@ -111,17 +111,18 @@ npx tsc --noEmit   # type check
 
 All apps deploy to the `default` namespace unless noted:
 
+All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by default for private HTTPS access. Satisfactory is the only exception (UDP LoadBalancer).
+
 | App | Type | Tailscale URL | Notes |
 |-----|------|--------------|-------|
 | tailscale | HelmRelease | — | Operator in `tailscale` namespace |
+| longhorn | HelmRelease | — | Block storage, `longhorn-system` namespace, `defaultReplicaCount: 1` |
 | foundry | Deployment | `foundry.pipefish-manta.ts.net` | Also via CF tunnel |
 | homepage | Deployment | `homepage.pipefish-manta.ts.net` | K8s cluster discovery |
 | monitoring | HelmRelease | `grafana/prometheus/alertmanager.pipefish-manta.ts.net` | kube-prometheus-stack |
 | paperless | Deployment | `paperless.pipefish-manta.ts.net` | web + worker + scheduler + postgres + redis |
 | satisfactory | Deployment | UDP LoadBalancer | infinite-granite node, NoSchedule taint |
-| dashdot | HelmRelease | `dashdot.pipefish-manta.ts.net` | Privileged, host hardware access |
 | donetick | Deployment | `donetick.pipefish-manta.ts.net` | SQLite, single container |
-| portainer | HelmRelease | `portainer.pipefish-manta.ts.net` | `portainer` namespace |
 
 ### Flux Bootstrap
 
@@ -164,7 +165,7 @@ All storage uses hostPath (`storageClassName: manual`) — node-pinned to new-be
 | Donetick | 10Gi | `/home/jack/donetick/data` |
 | Portainer | 10Gi | `/home/jack/portainer/data` |
 | Satisfactory | 30Gi | `/home/jack/Applications/satisfactory` (infinite-granite) |
-| Grafana | 10Gi | cluster default StorageClass |
+| Grafana | 10Gi | Longhorn (dynamic) |
 
 ### Networking
 
@@ -173,7 +174,7 @@ All storage uses hostPath (`storageClassName: manual`) — node-pinned to new-be
 - **Private**: Tailscale Ingress (HTTPS) for all HTTP services; UDP LoadBalancer for Satisfactory
 
 Tailscale services at `*.pipefish-manta.ts.net`:
-- foundry, homepage, grafana, prometheus, alertmanager, paperless, dashdot, donetick, portainer
+- foundry, homepage, grafana, prometheus, alertmanager, paperless, donetick
 - Satisfactory: UDP LoadBalancer (game ports incompatible with Ingress)
 
 ### K3s Configuration
@@ -200,10 +201,11 @@ Secrets are SOPS-encrypted with Age key at `~/.config/sops/age/keys.txt`. Rules 
 - **Flux CD Migration**: All K8s app workloads migrated from Pulumi microstacks to Flux CD GitOps. Pulumi now manages only cloud API resources (CF tunnel, Tailscale ACL/settings).
 - **SOPS Secrets**: App secrets encrypted at rest in Git with Age/SOPS. `scripts/preflight.py` exports from Pulumi and encrypts.
 - **Tailscale Operator**: Moved from Pulumi tailscale stack to Flux HelmRelease.
-- **Portainer**: Added Portainer CE for K8s management UI. `portainer` namespace, Tailscale Ingress at `portainer.pipefish-manta.ts.net`.
+- **Longhorn Restored**: Longhorn re-added as a Flux HelmRelease in `longhorn-system`. `defaultReplicaCount: 1` (single storage node). Grafana and Prometheus PVCs use Longhorn dynamic provisioning.
+- **Portainer Removed**: Removed from cluster.
+- **Dashdot Removed**: Removed from cluster.
+- **Tailscale Ingress Default**: All HTTP apps use `ingressClassName: tailscale`. Satisfactory retains UDP LoadBalancer.
 - **Glance → Homepage**: Replaced with Homepage dashboard using K8s cluster discovery mode.
 - **Vikunja → Donetick**: Replaced with Donetick (SQLite, single container, simpler).
 - **Two-Node Cluster**: new-bermuda (control plane) + infinite-granite (agent, NoSchedule taint).
-- **Longhorn Removed**: Reverted to hostPath PVs to reclaim ~760Mi RAM. Re-add when RAM upgraded.
 - **Namespace Consolidation**: All app workloads in `default` namespace.
-- **Tailscale Ingress**: All HTTP services use Tailscale Ingress for real HTTPS. Satisfactory retains UDP LoadBalancer.

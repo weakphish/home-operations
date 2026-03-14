@@ -3,11 +3,10 @@ kind: Kustomization
 resources:
   - _sources/ks.yaml
   - tailscale/ks.yaml
+  - longhorn/ks.yaml
   - foundry/ks.yaml
   - monitoring/ks.yaml
   - paperless/ks.yaml
   - satisfactory/ks.yaml
   - homepage/ks.yaml
-  - dashdot/ks.yaml
   - donetick/ks.yaml
-  - portainer/ks.yaml
