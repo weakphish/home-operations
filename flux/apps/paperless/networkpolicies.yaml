@@ -1,0 +1,146 @@
+# paperless-web: ingress from tailscale, egress to postgres + redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: paperless-web
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-web
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: tailscale
+      ports:
+        - port: 8000
+          protocol: TCP
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: paperless-postgres
+      ports:
+        - port: 5432
+          protocol: TCP
+    - to:
+        - podSelector:
+            matchLabels:
+              app: paperless-redis
+      ports:
+        - port: 6379
+          protocol: TCP
+---
+# paperless-worker: no ingress, egress to postgres + redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: paperless-worker
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-worker
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: paperless-postgres
+      ports:
+        - port: 5432
+          protocol: TCP
+    - to:
+        - podSelector:
+            matchLabels:
+              app: paperless-redis
+      ports:
+        - port: 6379
+          protocol: TCP
+---
+# paperless-scheduler: no ingress, egress to postgres + redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: paperless-scheduler
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-scheduler
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: paperless-postgres
+      ports:
+        - port: 5432
+          protocol: TCP
+    - to:
+        - podSelector:
+            matchLabels:
+              app: paperless-redis
+      ports:
+        - port: 6379
+          protocol: TCP
+---
+# paperless-postgres: only accept from paperless pods
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: paperless-postgres
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-postgres
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: paperless-web
+        - podSelector:
+            matchLabels:
+              app: paperless-worker
+        - podSelector:
+            matchLabels:
+              app: paperless-scheduler
+      ports:
+        - port: 5432
+          protocol: TCP
+---
+# paperless-redis: only accept from paperless pods
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: paperless-redis
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: paperless-web
+        - podSelector:
+            matchLabels:
+              app: paperless-worker
+        - podSelector:
+            matchLabels:
+              app: paperless-scheduler
+      ports:
+        - port: 6379
+          protocol: TCP

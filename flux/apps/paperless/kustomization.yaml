@@ -10,3 +10,4 @@ resources:
   - scheduler.yaml
   - services.yaml
   - ingress.yaml
+  - networkpolicies.yaml
