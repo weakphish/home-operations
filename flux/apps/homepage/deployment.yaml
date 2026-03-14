@@ -22,7 +22,7 @@ spec:
       containers:
         - name: homepage
           image: ghcr.io/gethomepage/homepage:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 3000
@@ -41,6 +41,17 @@ spec:
           resources:
             requests: { cpu: 10m, memory: 64Mi }
             limits: { cpu: 100m, memory: 128Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
       volumes:
         - name: config
           configMap:
