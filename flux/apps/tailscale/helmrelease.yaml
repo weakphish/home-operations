@@ -12,13 +12,12 @@ spec:
         kind: HelmRepository
         name: tailscale
         namespace: flux-system
-  values:
-    oauth:
-      clientId:
-        secretKeyRef:
-          name: tailscale-oauth
-          key: clientId
-      clientSecret:
-        secretKeyRef:
-          name: tailscale-oauth
-          key: clientSecret
+  valuesFrom:
+    - kind: Secret
+      name: tailscale-oauth
+      valuesKey: clientId
+      targetPath: oauth.clientId
+    - kind: Secret
+      name: tailscale-oauth
+      valuesKey: clientSecret
+      targetPath: oauth.clientSecret
