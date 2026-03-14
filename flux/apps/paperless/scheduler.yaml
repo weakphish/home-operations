@@ -47,3 +47,13 @@ spec:
           resources:
             requests: { cpu: 10m, memory: 64Mi }
             limits: { cpu: 200m, memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          livenessProbe:
+            exec:
+              command: [pgrep, -f, celery]
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
