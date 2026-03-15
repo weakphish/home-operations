@@ -17,11 +17,6 @@ spec:
       labels:
         app: satisfactory
     spec:
-      tolerations:
-        - key: role
-          operator: Equal
-          value: gaming-workstation
-          effect: NoSchedule
       volumes:
         - name: satisfactory-config
           persistentVolumeClaim:

@@ -57,6 +57,13 @@ spec:
       prometheusSpec:
         retention: 15d
         serviceMonitorSelectorNilUsesHelmValues: false
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -65,6 +72,14 @@ spec:
                 requests:
                   storage: 50Gi
     alertmanager:
+      alertmanagerSpec:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
       service:
         type: ClusterIP
       ingress:
