@@ -47,9 +47,3 @@ spec:
           resources:
             requests: { cpu: 10m, memory: 64Mi }
             limits: { cpu: 200m, memory: 256Mi }
-          livenessProbe:
-            exec:
-              command: [/bin/sh, -c, "pgrep -f 'celery.*beat'"]
-            initialDelaySeconds: 30
-            periodSeconds: 30
-            failureThreshold: 3

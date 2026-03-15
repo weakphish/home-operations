@@ -17,6 +17,7 @@ spec:
       labels:
         app: paperless-web
     spec:
+      enableServiceLinks: false
       volumes:
         - name: paperless-data
           persistentVolumeClaim: { claimName: paperless-data-claim }
