@@ -121,7 +121,7 @@ All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by defau
 | homepage | Deployment | `homepage.pipefish-manta.ts.net` | K8s cluster discovery |
 | monitoring | HelmRelease | `grafana/prometheus/alertmanager.pipefish-manta.ts.net` | kube-prometheus-stack |
 | paperless | Deployment | `paperless.pipefish-manta.ts.net` | web + worker + scheduler + postgres + redis |
-| satisfactory | Deployment | UDP LoadBalancer | infinite-granite node, NoSchedule taint |
+| satisfactory | Deployment | UDP LoadBalancer | schedules on any node |
 | donetick | Deployment | `donetick.pipefish-manta.ts.net` | SQLite, single container |
 
 ### Flux Bootstrap
@@ -143,16 +143,14 @@ flux bootstrap github \
 ### Ansible Structure
 
 - Imports k3s-io/k3s-ansible collection for cluster setup
-- Disables UFW on agent nodes (flannel VXLAN UDP 8472)
-- Installs Helm (apt for Ubuntu, pacman for Arch)
-- Cluster: server `new-bermuda`, agent `infinite-granite`
-- Agent taint configured via `agent_config_yaml` in inventory.yml
+- Installs Helm (apt for Ubuntu)
+- Cluster: single node — server `new-bermuda` (control plane only)
 
 ## Important Details
 
 ### Storage
 
-All storage uses hostPath (`storageClassName: manual`) — node-pinned to new-bermuda, except Satisfactory which is on infinite-granite.
+Most storage uses hostPath (`storageClassName: manual`) — node-pinned to new-bermuda. Satisfactory and Grafana/Prometheus use Longhorn dynamic provisioning.
 
 | App | Size | Path |
 |-----|------|------|
@@ -163,8 +161,7 @@ All storage uses hostPath (`storageClassName: manual`) — node-pinned to new-be
 | Paperless postgres | 10Gi | `/home/jack/paperless/postgres` |
 | Paperless redis | 1Gi | `/home/jack/paperless/redis` |
 | Donetick | 10Gi | `/home/jack/donetick/data` |
-| Portainer | 10Gi | `/home/jack/portainer/data` |
-| Satisfactory | 30Gi | `/home/jack/Applications/satisfactory` (infinite-granite) |
+| Satisfactory | 25Gi | Longhorn (dynamic) |
 | Grafana | 10Gi | Longhorn (dynamic) |
 
 ### Networking
@@ -179,10 +176,7 @@ Tailscale services at `*.pipefish-manta.ts.net`:
 
 ### K3s Configuration
 
-- **new-bermuda**: Control plane (K3s server, Ubuntu)
-- **infinite-granite**: Agent node (K3s agent, CachyOS) — local gaming workstation
-- Taint: `role=gaming-workstation:NoSchedule` on infinite-granite — only Satisfactory schedules there
-- UFW disabled on agent nodes via Ansible
+- **new-bermuda**: Single-node cluster (K3s server, Ubuntu) — control plane and workloads
 
 ### Namespace Strategy
 
@@ -207,5 +201,5 @@ Secrets are SOPS-encrypted with Age key at `~/.config/sops/age/keys.txt`. Rules 
 - **Tailscale Ingress Default**: All HTTP apps use `ingressClassName: tailscale`. Satisfactory retains UDP LoadBalancer.
 - **Glance → Homepage**: Replaced with Homepage dashboard using K8s cluster discovery mode.
 - **Vikunja → Donetick**: Replaced with Donetick (SQLite, single container, simpler).
-- **Two-Node Cluster**: new-bermuda (control plane) + infinite-granite (agent, NoSchedule taint).
+- **Single-Node Cluster**: infinite-granite removed; new-bermuda is now the sole node running all workloads.
 - **Namespace Consolidation**: All app workloads in `default` namespace.
