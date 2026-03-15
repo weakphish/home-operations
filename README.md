@@ -39,9 +39,8 @@ flowchart TB
                 Foundry[Foundry VTT]
                 Homepage[Homepage Dashboard]
                 Paperless[Paperless-ngx]
-                Dashdot[Dashdot]
                 Donetick[Donetick]
-                Portainer[Portainer]
+                Satisfactory[Satisfactory Server]
             end
 
             subgraph Monitoring[Monitoring Stack]
@@ -54,14 +53,8 @@ flowchart TB
                 FoundryPV[(PV: foundry 50Gi)]
                 PaperlessPVs[(PVs: paperless x5)]
                 DonetickPV[(PV: donetick 10Gi)]
-                PortainerPV[(PV: portainer 10Gi)]
+                SatisfactoryPV[(PVC: satisfactory 25Gi Longhorn)]
             end
-        end
-
-        subgraph Agent["Agent Node (infinite-granite) — Tainted: NoSchedule"]
-            Satisfactory[Satisfactory Server]
-            SatisfactoryPV[(PV: /home/jack/satisfactory)]
-            Satisfactory --> SatisfactoryPV
         end
     end
 
@@ -78,9 +71,7 @@ flowchart TB
     TSOperator -->|Ingress HTTPS| Foundry
     TSOperator -->|Ingress HTTPS| Homepage
     TSOperator -->|Ingress HTTPS| Paperless
-    TSOperator -->|Ingress HTTPS| Dashdot
     TSOperator -->|Ingress HTTPS| Donetick
-    TSOperator -->|Ingress HTTPS| Portainer
     TSOperator -->|Ingress HTTPS| Grafana
     TSOperator -->|Ingress HTTPS| Prometheus
     TSOperator -->|Ingress HTTPS| Alertmanager
@@ -91,7 +82,7 @@ flowchart TB
     Foundry --> FoundryPV
     Paperless --> PaperlessPVs
     Donetick --> DonetickPV
-    Portainer --> PortainerPV
+    Satisfactory --> SatisfactoryPV
 
     style CF fill:#f6821f
     style TSOperator fill:#4a5568
@@ -104,10 +95,7 @@ flowchart TB
     style Prometheus fill:#e08234
     style Alertmanager fill:#e05d44
     style Paperless fill:#17541f
-    style Dashdot fill:#6366f1
     style Donetick fill:#0ea5e9
-    style Portainer fill:#13bef9
-    style Agent fill:#3b82f6
 ```
 
 ## Networking

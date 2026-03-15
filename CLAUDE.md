@@ -121,8 +121,9 @@ All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by defau
 | homepage | Deployment | `homepage.pipefish-manta.ts.net` | K8s cluster discovery |
 | monitoring | HelmRelease | `grafana/prometheus/alertmanager.pipefish-manta.ts.net` | kube-prometheus-stack |
 | paperless | Deployment | `paperless.pipefish-manta.ts.net` | web + worker + scheduler + postgres + redis |
-| satisfactory | Deployment | UDP LoadBalancer | schedules on any node |
+| satisfactory | Deployment | UDP LoadBalancer | runs on new-bermuda |
 | donetick | Deployment | `donetick.pipefish-manta.ts.net` | SQLite, single container |
+| network-policies | Kustomization | — | default-deny + per-app allow rules |
 
 ### Flux Bootstrap
 
@@ -182,7 +183,7 @@ Tailscale services at `*.pipefish-manta.ts.net`:
 
 - `default`: all app workloads
 - `tailscale`: Tailscale operator (Helm chart requirement)
-- `portainer`: Portainer (convention)
+- `longhorn-system`: Longhorn storage
 - `kube-system`: system components
 - `flux-system`: Flux CD controllers
 
@@ -203,3 +204,4 @@ Secrets are SOPS-encrypted with Age key at `~/.config/sops/age/keys.txt`. Rules 
 - **Vikunja → Donetick**: Replaced with Donetick (SQLite, single container, simpler).
 - **Single-Node Cluster**: infinite-granite removed; new-bermuda is now the sole node running all workloads.
 - **Namespace Consolidation**: All app workloads in `default` namespace.
+- **Network Policies**: Default-deny egress/ingress added, with per-app allow rules for foundry, homepage, donetick, paperless, satisfactory, and monitoring stack.
