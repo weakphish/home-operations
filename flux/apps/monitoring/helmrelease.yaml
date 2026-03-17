@@ -36,6 +36,9 @@ spec:
         hosts: [grafana]
         tls:
           - hosts: [grafana]
+      grafana.ini:
+        server:
+          root_url: https://grafana.pipefish-manta.ts.net
       resources:
         requests:
           cpu: 20m
