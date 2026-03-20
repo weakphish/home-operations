@@ -4,7 +4,7 @@ metadata:
   name: kube-prometheus-stack
   namespace: default
 spec:
-  releaseName: prometheus
+  releaseName: kube-prometheus-chart
   interval: 1h
   chart:
     spec:
