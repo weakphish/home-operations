@@ -26,7 +26,8 @@ spec:
         ingressClassName: tailscale
         annotations:
           tailscale.com/hostname: prometheus
-        hosts: [prometheus]
+        hosts:
+          - host: prometheus
         tls:
           - hosts: [prometheus]
       resources:
@@ -45,7 +46,8 @@ spec:
         ingressClassName: tailscale
         annotations:
           tailscale.com/hostname: alertmanager
-        hosts: [alertmanager]
+        hosts:
+          - host: alertmanager
         tls:
           - hosts: [alertmanager]
       resources:

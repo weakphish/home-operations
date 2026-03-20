@@ -31,3 +31,5 @@ spec:
       enabled: true
     annotationAutodiscovery:
       enabled: true
+    alloy-metrics:
+      enabled: true
