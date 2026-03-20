@@ -120,10 +120,14 @@ All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by defau
 | cloudflared | Deployment | — | CF tunnel daemon, uses `tunnel-token` secret from Pulumi |
 | foundry | Deployment | `foundry.pipefish-manta.ts.net` | Also via CF tunnel |
 | homepage | Deployment | `homepage.pipefish-manta.ts.net` | K8s cluster discovery |
-| monitoring | HelmRelease | `grafana/prometheus/alertmanager.pipefish-manta.ts.net` | kube-prometheus-stack |
+| prometheus | HelmRelease | `prometheus.pipefish-manta.ts.net` | prometheus-community/prometheus, remote-write receiver |
+| loki | HelmRelease | — | grafana/loki, single binary, log storage for Alloy |
+| grafana | HelmRelease | `grafana.pipefish-manta.ts.net` | grafana/grafana, datasources: Prometheus + Loki |
+| k8s-monitoring | HelmRelease | — | grafana/k8s-monitoring, Alloy collector → Prometheus + Loki |
 | paperless | Deployment | `paperless.pipefish-manta.ts.net` | web + worker + scheduler + postgres + redis |
 | satisfactory | Deployment | UDP LoadBalancer | runs on new-bermuda |
 | donetick | Deployment | `donetick.pipefish-manta.ts.net` | SQLite, single container |
+| capacitor | Deployment | `capacitor.pipefish-manta.ts.net` | Flux CD UI |
 | network-policies | Kustomization | — | default-deny + per-app allow rules |
 
 ### Flux Bootstrap
@@ -165,6 +169,7 @@ Most storage uses hostPath (`storageClassName: manual`) — node-pinned to new-b
 | Donetick | 10Gi | `/home/jack/donetick/data` |
 | Satisfactory | 25Gi | Longhorn (dynamic) |
 | Grafana | 10Gi | Longhorn (dynamic) |
+| Loki | 20Gi | Longhorn (dynamic) |
 
 ### Networking
 
@@ -174,6 +179,7 @@ Most storage uses hostPath (`storageClassName: manual`) — node-pinned to new-b
 
 Tailscale services at `*.pipefish-manta.ts.net`:
 - foundry, homepage, grafana, prometheus, alertmanager, paperless, donetick
+- Loki: internal only (cluster datasource, no Tailscale ingress)
 - Satisfactory: UDP LoadBalancer (game ports incompatible with Ingress)
 
 ### K3s Configuration
@@ -197,7 +203,7 @@ Secrets are SOPS-encrypted with Age key at `~/.config/sops/age/keys.txt`. Rules 
 - **Flux CD Migration**: All K8s app workloads migrated from Pulumi microstacks to Flux CD GitOps. Pulumi now manages only cloud API resources (CF tunnel, Tailscale ACL/settings).
 - **SOPS Secrets**: App secrets encrypted at rest in Git with Age/SOPS. `scripts/preflight.py` exports from Pulumi and encrypts.
 - **Tailscale Operator**: Moved from Pulumi tailscale stack to Flux HelmRelease.
-- **Longhorn Restored**: Longhorn re-added as a Flux HelmRelease in `longhorn-system`. `defaultReplicaCount: 1` (single storage node). Grafana and Prometheus PVCs use Longhorn dynamic provisioning.
+- **Longhorn Restored**: Longhorn re-added as a Flux HelmRelease in `longhorn-system`. `defaultReplicaCount: 1` (single storage node). Grafana, Prometheus, and Loki PVCs use Longhorn dynamic provisioning.
 - **Portainer Removed**: Removed from cluster.
 - **Dashdot Removed**: Removed from cluster.
 - **Tailscale Ingress Default**: All HTTP apps use `ingressClassName: tailscale`. Satisfactory retains UDP LoadBalancer.

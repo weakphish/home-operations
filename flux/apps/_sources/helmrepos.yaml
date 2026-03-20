@@ -37,8 +37,8 @@ spec:
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: portainer
+  name: grafana
   namespace: flux-system
 spec:
   interval: 1h
-  url: https://portainer.github.io/k8s/
+  url: https://grafana.github.io/helm-charts
