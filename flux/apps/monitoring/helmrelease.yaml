@@ -17,6 +17,8 @@ spec:
     fullnameOverride: prometheus
     grafana:
       enabled: true
+      plugins:
+        - cloudflare-app
       initChownData:
         enabled: false
       persistence:
