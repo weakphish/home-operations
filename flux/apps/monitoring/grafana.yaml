@@ -35,5 +35,7 @@ spec:
     sidecar:
       dashboards:
         enabled: true
+        env:
+          HEALTHCHECK_PORT: "9004"
       datasources:
         enabled: true
