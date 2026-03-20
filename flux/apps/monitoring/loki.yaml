@@ -55,6 +55,9 @@ spec:
       enabled: false
     resultsCache:
       enabled: false
+    sidecar:
+      rules:
+        enabled: false
     lokiCanary:
       enabled: false
     test:
