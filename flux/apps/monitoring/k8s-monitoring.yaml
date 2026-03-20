@@ -33,3 +33,5 @@ spec:
       enabled: true
     alloy-metrics:
       enabled: true
+    alloy-singleton:
+      enabled: true
