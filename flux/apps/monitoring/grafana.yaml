@@ -10,15 +10,9 @@ spec:
       chart: grafana
       sourceRef:
         kind: HelmRepository
-        name: grafana
+        name: grafana-community
         namespace: flux-system
   values:
-    admin:
-      existingSecret: grafana-admin
-      userKey: admin-user
-      passwordKey: admin-password
-    plugins:
-      - cloudflare-app
     persistence:
       enabled: true
       storageClassName: longhorn
@@ -38,62 +32,3 @@ spec:
     grafana.ini:
       server:
         root_url: https://grafana.pipefish-manta.ts.net
-    datasources:
-      datasources.yaml:
-        apiVersion: 1
-        datasources:
-          - name: Prometheus
-            type: prometheus
-            url: http://prometheus-server.default.svc.cluster.local
-            isDefault: true
-            access: proxy
-          - name: Loki
-            type: loki
-            url: http://loki.default.svc.cluster.local:3100
-            access: proxy
-    sidecar:
-      dashboards:
-        enabled: false
-      datasources:
-        enabled: false
-    dashboardProviders:
-      dashboardproviders.yaml:
-        apiVersion: 1
-        providers:
-          - name: kubernetes
-            orgId: 1
-            folder: Kubernetes
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/kubernetes
-    dashboards:
-      kubernetes:
-        k8s-global:
-          gnetId: 15661
-          revision: 1
-          datasource: Prometheus
-        k8s-nodes:
-          gnetId: 15759
-          revision: 1
-          datasource: Prometheus
-        k8s-namespaces:
-          gnetId: 15758
-          revision: 1
-          datasource: Prometheus
-        k8s-pods:
-          gnetId: 15760
-          revision: 1
-          datasource: Prometheus
-        k8s-logs:
-          gnetId: 13639
-          revision: 2
-          datasource: Loki
-    resources:
-      requests:
-        cpu: 20m
-        memory: 256Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
