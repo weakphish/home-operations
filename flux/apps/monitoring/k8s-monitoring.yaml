@@ -25,5 +25,9 @@ spec:
         tenantId: "default"
     clusterMetrics:
       enabled: true
+    clusterEvents:
+      enabled: true
     podLogs:
+      enabled: true
+    annotationAutodiscovery:
       enabled: true

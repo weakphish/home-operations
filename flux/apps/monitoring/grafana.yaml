@@ -51,6 +51,13 @@ spec:
             type: loki
             url: http://loki.default.svc.cluster.local:3100
             access: proxy
+    sidecar:
+      dashboards:
+        enabled: true
+        searchNamespace: ALL
+        label: grafana_dashboard
+      datasources:
+        enabled: false
     resources:
       requests:
         cpu: 20m
