@@ -11,4 +11,5 @@ resources:
   - satisfactory/ks.yaml
   - homepage/ks.yaml
   - donetick/ks.yaml
+  - capacitor/ks.yaml
   - network-policies/ks.yaml
