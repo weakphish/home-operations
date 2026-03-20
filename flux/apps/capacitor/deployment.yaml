@@ -18,7 +18,7 @@ spec:
       serviceAccountName: capacitor
       containers:
         - name: capacitor
-          image: ghcr.io/gimlet-io/capacitor:latest
+          image: ghcr.io/gimlet-io/capacitor-next:0.14.0
           ports:
             - containerPort: 9000
           livenessProbe:
