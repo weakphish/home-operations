@@ -127,7 +127,6 @@ All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by defau
 | paperless | Deployment | `paperless.pipefish-manta.ts.net` | web + worker + scheduler + postgres + redis |
 | satisfactory | Deployment | UDP LoadBalancer | runs on new-bermuda |
 | donetick | Deployment | `donetick.pipefish-manta.ts.net` | SQLite, single container |
-| capacitor | Deployment | `capacitor.pipefish-manta.ts.net` | Flux CD UI |
 | network-policies | Kustomization | — | default-deny + per-app allow rules |
 
 ### Flux Bootstrap
