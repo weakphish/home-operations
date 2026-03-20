@@ -53,11 +53,43 @@ spec:
             access: proxy
     sidecar:
       dashboards:
-        enabled: true
-        searchNamespace: ALL
-        label: grafana_dashboard
+        enabled: false
       datasources:
         enabled: false
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: kubernetes
+            orgId: 1
+            folder: Kubernetes
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/kubernetes
+    dashboards:
+      kubernetes:
+        k8s-global:
+          gnetId: 15661
+          revision: 1
+          datasource: Prometheus
+        k8s-nodes:
+          gnetId: 15759
+          revision: 1
+          datasource: Prometheus
+        k8s-namespaces:
+          gnetId: 15758
+          revision: 1
+          datasource: Prometheus
+        k8s-pods:
+          gnetId: 15760
+          revision: 1
+          datasource: Prometheus
+        k8s-logs:
+          gnetId: 13639
+          revision: 2
+          datasource: Loki
     resources:
       requests:
         cpu: 20m
