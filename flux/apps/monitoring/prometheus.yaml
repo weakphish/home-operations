@@ -47,6 +47,9 @@ spec:
           tailscale.com/hostname: alertmanager
         hosts:
           - host: alertmanager
+            paths:
+              - path: /
+                pathType: Prefix
         tls:
           - hosts: [alertmanager]
       resources:
