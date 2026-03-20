@@ -4,6 +4,7 @@ resources:
   - _sources/ks.yaml
   - tailscale/ks.yaml
   - longhorn/ks.yaml
+  - cloudflared/ks.yaml
   - foundry/ks.yaml
   - monitoring/ks.yaml
   - paperless/ks.yaml
