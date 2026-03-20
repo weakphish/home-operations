@@ -45,7 +45,8 @@ spec:
         ingressClassName: tailscale
         annotations:
           tailscale.com/hostname: alertmanager
-        hosts: [alertmanager]
+        hosts:
+          - host: alertmanager
         tls:
           - hosts: [alertmanager]
       resources:
