@@ -32,3 +32,8 @@ spec:
     grafana.ini:
       server:
         root_url: https://grafana.pipefish-manta.ts.net
+    sidecar:
+      dashboards:
+        enabled: true
+      datasources:
+        enabled: true
