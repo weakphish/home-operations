@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - grafana.yaml
   - kube-prometheus-stack.yaml
+  - networkpolicy.yaml
