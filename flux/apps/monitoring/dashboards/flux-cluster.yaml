@@ -509,7 +509,8 @@ data:
                   "name": "Name",
                   "exported_namespace": "Namespace",
                   "Value #A": "Reconciliations",
-                  "Value #B": "Avg Duration"
+                  "Value #B": "Avg Duration",
+                  "Value": "Reconciliations"
                 }
               }
             }
