@@ -9,6 +9,8 @@ Every time you make a change, ensure that you:
 
 to both be up to date with the changes, if necessary.
 
+When debugging or gathering cluster state, **run `kubectl` and other shell commands yourself** via the Bash tool rather than asking the user to run them.
+
 ## Repository Overview
 
 This is a self-hosted infrastructure repository using:

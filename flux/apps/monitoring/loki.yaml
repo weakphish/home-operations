@@ -51,3 +51,6 @@ spec:
       replicas: 0
     minio:
       enabled: false
+    sidecar:
+      rules:
+        enabled: false
