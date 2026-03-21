@@ -122,6 +122,8 @@ All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by defau
 | homepage | Deployment | `homepage.pipefish-manta.ts.net` | K8s cluster discovery |
 | grafana | HelmRelease | `grafana.pipefish-manta.ts.net` | grafana-community/grafana, sidecars for auto dashboard/datasource loading |
 | kube-prometheus-stack | HelmRelease | — | prometheus-community/kube-prometheus-stack, bundles Prometheus Operator, Prometheus, Alertmanager, kube-state-metrics, node-exporter; grafana disabled |
+| alloy | HelmRelease | — | grafana/alloy, DaemonSet log collector → Loki |
+| loki | HelmRelease | — | grafana-community/loki, SingleBinary, filesystem storage, 7-day retention |
 | paperless | Deployment | `paperless.pipefish-manta.ts.net` | web + worker + scheduler + postgres + redis |
 | satisfactory | Deployment | UDP LoadBalancer | runs on new-bermuda |
 | donetick | Deployment | `donetick.pipefish-manta.ts.net` | SQLite, single container |
@@ -166,6 +168,7 @@ Most storage uses hostPath (`storageClassName: manual`) — node-pinned to new-b
 | Donetick | 10Gi | `/home/jack/donetick/data` |
 | Satisfactory | 25Gi | Longhorn (dynamic) |
 | Grafana | 10Gi | Longhorn (dynamic) |
+| Loki | 20Gi | Longhorn (dynamic) |
 
 ### Networking
 
@@ -176,6 +179,7 @@ Most storage uses hostPath (`storageClassName: manual`) — node-pinned to new-b
 Tailscale services at `*.pipefish-manta.ts.net`:
 - foundry, homepage, grafana, paperless, donetick
 - Prometheus/Alertmanager: internal only (bundled in kube-prometheus-stack, no Tailscale ingress)
+- Loki: internal only (log storage, no Tailscale ingress)
 - Satisfactory: UDP LoadBalancer (game ports incompatible with Ingress)
 
 ### K3s Configuration
@@ -206,6 +210,7 @@ Secrets are SOPS-encrypted with Age key at `~/.config/sops/age/keys.txt`. Rules 
 - **Glance → Homepage**: Replaced with Homepage dashboard using K8s cluster discovery mode.
 - **Vikunja → Donetick**: Replaced with Donetick (SQLite, single container, simpler).
 - **Monitoring Stack Replaced**: Standalone prometheus, loki, and k8s-monitoring (Alloy) replaced with `kube-prometheus-stack` (Prometheus Operator + Prometheus + Alertmanager + kube-state-metrics + node-exporter). Grafana uses grafana-community chart with sidecars for auto dashboard/datasource loading from kube-prometheus-stack ConfigMaps.
+- **Alloy + Loki Added**: Grafana Alloy (DaemonSet) collects pod logs and K8s events, ships to Loki (SingleBinary, filesystem, Longhorn). Grafana auto-discovers Loki datasource via sidecar ConfigMap. See `flux/apps/monitoring/README.md` for monitoring stack details.
 - **Single-Node Cluster**: infinite-granite removed; new-bermuda is now the sole node running all workloads.
 - **Namespace Consolidation**: All app workloads in `default` namespace.
 - **Network Policies**: Default-deny egress/ingress added, with per-app allow rules for foundry, homepage, donetick, paperless, satisfactory, and monitoring stack.
