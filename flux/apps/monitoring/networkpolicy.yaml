@@ -161,11 +161,18 @@ spec:
           protocol: TCP
         - port: 6443
           protocol: TCP
+    # node-exporter on host network (hostNetwork:true, uses node IP not pod overlay)
+    - to:
+        - ipBlock:
+            cidr: 192.168.1.9/32
+      ports:
+        - port: 9100
+          protocol: TCP
     # Scrape targets in default namespace
     - to:
         - podSelector: {}
       ports:
-        - port: 9100  # node-exporter
+        - port: 9100  # node-exporter (fallback for non-hostNetwork)
           protocol: TCP
         - port: 8080  # kube-state-metrics, config-reloader
           protocol: TCP
