@@ -120,10 +120,8 @@ All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by defau
 | cloudflared | Deployment | — | CF tunnel daemon, uses `tunnel-token` secret from Pulumi |
 | foundry | Deployment | `foundry.pipefish-manta.ts.net` | Also via CF tunnel |
 | homepage | Deployment | `homepage.pipefish-manta.ts.net` | K8s cluster discovery |
-| prometheus | HelmRelease | `prometheus.pipefish-manta.ts.net` | prometheus-community/prometheus, remote-write receiver |
-| loki | HelmRelease | — | grafana/loki, single binary, log storage for Alloy |
-| grafana | HelmRelease | `grafana.pipefish-manta.ts.net` | grafana/grafana, datasources: Prometheus + Loki |
-| k8s-monitoring | HelmRelease | — | grafana/k8s-monitoring, Alloy collector → Prometheus + Loki |
+| grafana | HelmRelease | `grafana.pipefish-manta.ts.net` | grafana-community/grafana, sidecars for auto dashboard/datasource loading |
+| kube-prometheus-stack | HelmRelease | — | prometheus-community/kube-prometheus-stack, bundles Prometheus Operator, Prometheus, Alertmanager, kube-state-metrics, node-exporter; grafana disabled |
 | paperless | Deployment | `paperless.pipefish-manta.ts.net` | web + worker + scheduler + postgres + redis |
 | satisfactory | Deployment | UDP LoadBalancer | runs on new-bermuda |
 | donetick | Deployment | `donetick.pipefish-manta.ts.net` | SQLite, single container |
@@ -168,7 +166,6 @@ Most storage uses hostPath (`storageClassName: manual`) — node-pinned to new-b
 | Donetick | 10Gi | `/home/jack/donetick/data` |
 | Satisfactory | 25Gi | Longhorn (dynamic) |
 | Grafana | 10Gi | Longhorn (dynamic) |
-| Loki | 20Gi | Longhorn (dynamic) |
 
 ### Networking
 
@@ -177,8 +174,8 @@ Most storage uses hostPath (`storageClassName: manual`) — node-pinned to new-b
 - **Private**: Tailscale Ingress (HTTPS) for all HTTP services; UDP LoadBalancer for Satisfactory
 
 Tailscale services at `*.pipefish-manta.ts.net`:
-- foundry, homepage, grafana, prometheus, alertmanager, paperless, donetick
-- Loki: internal only (cluster datasource, no Tailscale ingress)
+- foundry, homepage, grafana, paperless, donetick
+- Prometheus/Alertmanager: internal only (bundled in kube-prometheus-stack, no Tailscale ingress)
 - Satisfactory: UDP LoadBalancer (game ports incompatible with Ingress)
 
 ### K3s Configuration
@@ -202,12 +199,13 @@ Secrets are SOPS-encrypted with Age key at `~/.config/sops/age/keys.txt`. Rules 
 - **Flux CD Migration**: All K8s app workloads migrated from Pulumi microstacks to Flux CD GitOps. Pulumi now manages only cloud API resources (CF tunnel, Tailscale ACL/settings).
 - **SOPS Secrets**: App secrets encrypted at rest in Git with Age/SOPS. `scripts/preflight.py` exports from Pulumi and encrypts.
 - **Tailscale Operator**: Moved from Pulumi tailscale stack to Flux HelmRelease.
-- **Longhorn Restored**: Longhorn re-added as a Flux HelmRelease in `longhorn-system`. `defaultReplicaCount: 1` (single storage node). Grafana, Prometheus, and Loki PVCs use Longhorn dynamic provisioning.
+- **Longhorn Restored**: Longhorn re-added as a Flux HelmRelease in `longhorn-system`. `defaultReplicaCount: 1` (single storage node). Grafana and Satisfactory PVCs use Longhorn dynamic provisioning.
 - **Portainer Removed**: Removed from cluster.
 - **Dashdot Removed**: Removed from cluster.
 - **Tailscale Ingress Default**: All HTTP apps use `ingressClassName: tailscale`. Satisfactory retains UDP LoadBalancer.
 - **Glance → Homepage**: Replaced with Homepage dashboard using K8s cluster discovery mode.
 - **Vikunja → Donetick**: Replaced with Donetick (SQLite, single container, simpler).
+- **Monitoring Stack Replaced**: Standalone prometheus, loki, and k8s-monitoring (Alloy) replaced with `kube-prometheus-stack` (Prometheus Operator + Prometheus + Alertmanager + kube-state-metrics + node-exporter). Grafana uses grafana-community chart with sidecars for auto dashboard/datasource loading from kube-prometheus-stack ConfigMaps.
 - **Single-Node Cluster**: infinite-granite removed; new-bermuda is now the sole node running all workloads.
 - **Namespace Consolidation**: All app workloads in `default` namespace.
 - **Network Policies**: Default-deny egress/ingress added, with per-app allow rules for foundry, homepage, donetick, paperless, satisfactory, and monitoring stack.

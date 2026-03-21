@@ -44,9 +44,8 @@ flowchart TB
             end
 
             subgraph Monitoring[Monitoring Stack]
-                Prometheus[Prometheus]
+                KPS[kube-prometheus-stack\nPrometheus · Alertmanager\nkube-state-metrics · node-exporter]
                 Grafana[Grafana]
-                Alertmanager[Alertmanager]
             end
 
             subgraph Storage
@@ -73,8 +72,7 @@ flowchart TB
     TSOperator -->|Ingress HTTPS| Paperless
     TSOperator -->|Ingress HTTPS| Donetick
     TSOperator -->|Ingress HTTPS| Grafana
-    TSOperator -->|Ingress HTTPS| Prometheus
-    TSOperator -->|Ingress HTTPS| Alertmanager
+    KPS -->|datasources/dashboards via sidecar| Grafana
     TSOperator -->|LoadBalancer UDP| Satisfactory
 
     Members[Tailnet Members] -->|Tailscale :7777 only| Satisfactory
@@ -92,8 +90,7 @@ flowchart TB
     style Homepage fill:#10b981
     style Satisfactory fill:#f97316
     style Grafana fill:#ff6b6b
-    style Prometheus fill:#e08234
-    style Alertmanager fill:#e05d44
+    style KPS fill:#e08234
     style Paperless fill:#17541f
     style Donetick fill:#0ea5e9
 ```
