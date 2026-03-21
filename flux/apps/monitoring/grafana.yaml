@@ -32,6 +32,8 @@ spec:
     grafana.ini:
       server:
         root_url: https://grafana.pipefish-manta.ts.net
+      auth.basic:
+        enabled: true
     sidecar:
       dashboards:
         enabled: true
