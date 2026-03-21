@@ -404,6 +404,52 @@ data:
           }
         },
         {
+          "id": 9,
+          "type": "piechart",
+          "title": "Resources by Kind",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "expr": "count by (kind) (count by (kind, name) (gotk_reconcile_duration_seconds_count{namespace=~\"$operator_namespace\"}))",
+              "instant": true,
+              "legendFormat": "{{kind}}",
+              "refId": "A"
+            }
+          ],
+          "gridPos": {
+            "h": 10,
+            "w": 8,
+            "x": 0,
+            "y": 15
+          },
+          "options": {
+            "pieType": "pie",
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short"
+            }
+          }
+        },
+        {
           "id": 7,
           "type": "table",
           "title": "Reconciliation Stats per Resource",
@@ -435,8 +481,8 @@ data:
           ],
           "gridPos": {
             "h": 10,
-            "w": 24,
-            "x": 0,
+            "w": 16,
+            "x": 8,
             "y": 15
           },
           "options": {
