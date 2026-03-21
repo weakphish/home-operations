@@ -34,6 +34,8 @@ spec:
         root_url: https://grafana.pipefish-manta.ts.net
     sidecar:
       dashboards:
-        enabled: false
+        enabled: true
+        env:
+          HEALTHCHECK_PORT: "9004"
       datasources:
-        enabled: false
+        enabled: true

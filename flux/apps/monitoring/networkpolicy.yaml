@@ -32,12 +32,16 @@ spec:
           protocol: UDP
         - port: 53
           protocol: TCP
-    # Kubernetes API (for sidecars to watch ConfigMaps)
+    # Kubernetes API (ClusterIP and actual node address, K3s/Flannel may DNAT before policy eval)
     - to:
         - ipBlock:
             cidr: 10.43.0.1/32
+        - ipBlock:
+            cidr: 192.168.1.9/32
       ports:
         - port: 443
+          protocol: TCP
+        - port: 6443
           protocol: TCP
     # Prometheus (kube-prometheus-stack)
     - to:
