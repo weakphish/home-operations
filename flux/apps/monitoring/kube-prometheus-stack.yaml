@@ -16,6 +16,9 @@ spec:
     grafana:
       enabled: false
     prometheus-node-exporter:
+      extraArgs:
+        - --collector.systemd
+        - --collector.processes
       prometheus:
         monitor:
           relabelings:
