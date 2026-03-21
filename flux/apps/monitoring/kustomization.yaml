@@ -3,4 +3,7 @@ kind: Kustomization
 resources:
   - grafana.yaml
   - kube-prometheus-stack.yaml
+  - loki.yaml
+  - loki-datasource.yaml
+  - alloy.yaml
   - networkpolicy.yaml
