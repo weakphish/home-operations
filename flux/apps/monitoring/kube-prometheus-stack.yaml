@@ -15,3 +15,10 @@ spec:
   values:
     grafana:
       enabled: false
+    prometheus-node-exporter:
+      prometheus:
+        monitor:
+          relabelings:
+            # Rename job to "node" for compatibility with Node Exporter Full dashboard (ID 1860)
+            - targetLabel: job
+              replacement: node
