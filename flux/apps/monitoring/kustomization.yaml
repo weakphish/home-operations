@@ -8,3 +8,8 @@ resources:
   - prometheus-datasource.yaml
   - alloy.yaml
   - networkpolicy.yaml
+  - dashboards/node-exporter.yaml
+  - dashboards/flux-cluster.yaml
+  - dashboards/flux-control-plane.yaml
+  - dashboards/flux-logs.yaml
+  - flux-podmonitor.yaml

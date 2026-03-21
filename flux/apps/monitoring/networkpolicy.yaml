@@ -180,6 +180,25 @@ spec:
           protocol: TCP
         - port: 9090  # self-scrape
           protocol: TCP
+    # Scrape Flux controllers in flux-system namespace (port 8080 = http-prom)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: flux-system
+          podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - helm-controller
+                  - source-controller
+                  - kustomize-controller
+                  - notification-controller
+                  - image-automation-controller
+                  - image-reflector-controller
+      ports:
+        - port: 8080
+          protocol: TCP
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

@@ -15,6 +15,12 @@ spec:
   values:
     grafana:
       enabled: false
+    prometheus:
+      prometheusSpec:
+        podMonitorNamespaceSelector:
+          matchNames:
+            - default
+            - flux-system
     prometheus-node-exporter:
       extraArgs:
         - --collector.systemd
