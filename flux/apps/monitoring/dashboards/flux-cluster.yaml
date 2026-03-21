@@ -482,12 +482,28 @@ data:
           },
           "transformations": [
             {
+              "id": "labelsToFields",
+              "options": {
+                "mode": "columns"
+              }
+            },
+            {
               "id": "merge",
               "options": {}
             },
             {
               "id": "organize",
               "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "container": true,
+                  "endpoint": true,
+                  "instance": true,
+                  "job": true,
+                  "pod": true,
+                  "namespace": true,
+                  "__name__": true
+                },
                 "renameByName": {
                   "kind": "Kind",
                   "name": "Name",
