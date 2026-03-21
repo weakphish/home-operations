@@ -45,6 +45,8 @@ flowchart TB
 
             subgraph Monitoring[Monitoring Stack]
                 KPS[kube-prometheus-stack\nPrometheus · Alertmanager\nkube-state-metrics · node-exporter]
+                Alloy[Alloy\nlog collector]
+                Loki[Loki\nlog storage]
                 Grafana[Grafana]
             end
 
@@ -53,6 +55,7 @@ flowchart TB
                 PaperlessPVs[(PVs: paperless x5)]
                 DonetickPV[(PV: donetick 10Gi)]
                 SatisfactoryPV[(PVC: satisfactory 25Gi Longhorn)]
+                LokiPV[(PVC: loki 20Gi Longhorn)]
             end
         end
     end
@@ -73,6 +76,8 @@ flowchart TB
     TSOperator -->|Ingress HTTPS| Donetick
     TSOperator -->|Ingress HTTPS| Grafana
     KPS -->|datasources/dashboards via sidecar| Grafana
+    Alloy -->|push logs| Loki
+    Loki -->|datasource via sidecar| Grafana
     TSOperator -->|LoadBalancer UDP| Satisfactory
 
     Members[Tailnet Members] -->|Tailscale :7777 only| Satisfactory
@@ -81,6 +86,7 @@ flowchart TB
     Paperless --> PaperlessPVs
     Donetick --> DonetickPV
     Satisfactory --> SatisfactoryPV
+    Loki --> LokiPV
 
     style CF fill:#f6821f
     style TSOperator fill:#4a5568
@@ -91,6 +97,8 @@ flowchart TB
     style Satisfactory fill:#f97316
     style Grafana fill:#ff6b6b
     style KPS fill:#e08234
+    style Alloy fill:#ff7043
+    style Loki fill:#2196f3
     style Paperless fill:#17541f
     style Donetick fill:#0ea5e9
 ```
