@@ -777,6 +777,230 @@ data:
               }
             }
           ]
+        },
+        {
+          "id": 105,
+          "type": "row",
+          "title": "Resource Status",
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 45
+          }
+        },
+        {
+          "id": 11,
+          "type": "stat",
+          "title": "Ready",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "expr": "count(gotk_resource_info{ready=\"True\"})",
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "gridPos": {"h": 4, "w": 8, "x": 0, "y": 46},
+          "options": {
+            "reduceOptions": {"calcs": ["lastNotNull"]},
+            "colorMode": "value",
+            "graphMode": "none"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {"mode": "fixed", "fixedColor": "green"}
+            }
+          }
+        },
+        {
+          "id": 12,
+          "type": "stat",
+          "title": "Not Ready",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "expr": "count(gotk_resource_info{ready=\"False\"})",
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "gridPos": {"h": 4, "w": 8, "x": 8, "y": 46},
+          "options": {
+            "reduceOptions": {"calcs": ["lastNotNull"]},
+            "colorMode": "background",
+            "graphMode": "none"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "red", "value": 1}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 13,
+          "type": "stat",
+          "title": "Suspended",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "expr": "count(gotk_resource_info{suspended=\"true\"})",
+              "instant": true,
+              "refId": "A"
+            }
+          ],
+          "gridPos": {"h": 4, "w": 8, "x": 16, "y": 46},
+          "options": {
+            "reduceOptions": {"calcs": ["lastNotNull"]},
+            "colorMode": "background",
+            "graphMode": "none"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 1}
+                ]
+              }
+            }
+          }
+        },
+        {
+          "id": 14,
+          "type": "table",
+          "title": "Resource Status",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "expr": "gotk_resource_info",
+              "instant": true,
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "gridPos": {"h": 12, "w": 24, "x": 0, "y": 50},
+          "options": {
+            "sortBy": [{"displayName": "Kind", "desc": false}]
+          },
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": [
+              {
+                "matcher": {"id": "byName", "options": "Ready"},
+                "properties": [
+                  {"id": "custom.displayMode", "value": "color-background"},
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "type": "value",
+                        "options": {
+                          "True": {"text": "Ready", "color": "green", "index": 0},
+                          "False": {"text": "Not Ready", "color": "red", "index": 1}
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {"id": "byName", "options": "Suspended"},
+                "properties": [
+                  {"id": "custom.displayMode", "value": "color-background"},
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "type": "value",
+                        "options": {
+                          "true": {"text": "Suspended", "color": "yellow", "index": 0},
+                          "false": {"text": "Active", "color": "green", "index": 1}
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "matcher": {"id": "byName", "options": "Time"},
+                "properties": [{"id": "custom.hidden", "value": true}]
+              },
+              {
+                "matcher": {"id": "byName", "options": "Value"},
+                "properties": [{"id": "custom.hidden", "value": true}]
+              }
+            ]
+          },
+          "transformations": [
+            {"id": "labelsToFields", "options": {"mode": "columns"}},
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "container": true,
+                  "endpoint": true,
+                  "instance": true,
+                  "job": true,
+                  "pod": true,
+                  "namespace": true,
+                  "__name__": true
+                },
+                "renameByName": {
+                  "customresource_kind": "Kind",
+                  "name": "Name",
+                  "exported_namespace": "Namespace",
+                  "ready": "Ready",
+                  "suspended": "Suspended",
+                  "revision": "Revision",
+                  "source_name": "Source"
+                }
+              }
+            }
+          ]
         }
       ]
     }
