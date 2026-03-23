@@ -635,6 +635,148 @@ data:
               }
             }
           }
+        },
+        {
+          "id": 104,
+          "type": "row",
+          "title": "Stats by Kind",
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 34
+          }
+        },
+        {
+          "id": 10,
+          "type": "table",
+          "title": "Resource Stats by Kind",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "expr": "count by (kind) (count by (kind, name) (gotk_reconcile_duration_seconds_count{namespace=~\"$operator_namespace\"}))",
+              "instant": true,
+              "legendFormat": "",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "expr": "sum by (kind) (rate(gotk_reconcile_duration_seconds_count{namespace=~\"$operator_namespace\"}[5m])) * 60",
+              "instant": true,
+              "legendFormat": "",
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "expr": "sum by (kind) (rate(gotk_reconcile_duration_seconds_sum{namespace=~\"$operator_namespace\"}[5m]))\n/ sum by (kind) (rate(gotk_reconcile_duration_seconds_count{namespace=~\"$operator_namespace\"}[5m]))",
+              "instant": true,
+              "legendFormat": "",
+              "refId": "C"
+            }
+          ],
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 35
+          },
+          "options": {
+            "sortBy": [
+              {
+                "displayName": "Kind",
+                "desc": false
+              }
+            ]
+          },
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Reconcile Rate (ops/min)"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "ops"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 2
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Avg Duration"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "s"
+                  },
+                  {
+                    "id": "decimals",
+                    "value": 3
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              }
+            ]
+          },
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": {
+                "mode": "columns"
+              }
+            },
+            {
+              "id": "merge",
+              "options": {}
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true
+                },
+                "renameByName": {
+                  "kind": "Kind",
+                  "Value #A": "Resources",
+                  "Value #B": "Reconcile Rate (ops/min)",
+                  "Value #C": "Avg Duration"
+                }
+              }
+            }
+          ]
         }
       ]
     }
