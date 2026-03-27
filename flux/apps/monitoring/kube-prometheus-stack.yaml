@@ -178,3 +178,7 @@ spec:
             # Rename job to "node" for compatibility with Node Exporter Full dashboard (ID 1860)
             - targetLabel: job
               replacement: node
+    prometheus:
+      prometheusSpec:
+        scrapeInterval: 30s
+        evaluationInterval: 30s
