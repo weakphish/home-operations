@@ -18,8 +18,6 @@ spec:
       enabled: true
       storageClassName: longhorn
       size: 10Gi
-    initChownData:
-      enabled: false
     service:
       type: ClusterIP
     ingress:
