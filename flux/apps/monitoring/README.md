@@ -17,9 +17,10 @@ flowchart LR
     end
 
     subgraph Cluster["Kubernetes Cluster"]
-        KSM["kube-state-metrics\n(K8s object state)"]
+        KSM["kube-state-metrics\n(K8s object state +\nFlux CRD state)"]
         Kubelet["Kubelet / cAdvisor\n(container resource usage)"]
         KEvents["K8s Events API"]
+        FluxCtrl["Flux controllers\n(helm/source/kustomize/...)"]
     end
 
     subgraph Metrics["Metrics Pipeline"]
@@ -38,6 +39,7 @@ flowchart LR
     NE -->|"scrape :9100"| Prometheus
     KSM -->|"scrape :8080"| Prometheus
     Kubelet -->|"scrape :10250"| Prometheus
+    FluxCtrl -->|"PodMonitor :8080"| Prometheus
 
     %% Logs collection
     Logs -->|"tail log files"| Alloy
@@ -58,6 +60,7 @@ flowchart LR
     style Alertmanager fill:#f6821f,color:#fff
     style KSM fill:#9c27b0,color:#fff
     style NE fill:#9c27b0,color:#fff
+    style FluxCtrl fill:#0078d4,color:#fff
 ```
 
 ## What Each Component Does
@@ -85,6 +88,12 @@ Example metrics it provides:
 - `kube_pod_status_phase` — is each pod Running/Pending/Failed?
 - `kube_deployment_status_replicas_available` — how many replicas are actually up?
 - `kube_persistentvolumeclaim_status_phase` — are PVCs bound?
+
+KSM is also configured with `customResourceState` to expose **Flux CRD state** as metrics. Extra RBAC rules allow it to list/watch all Flux resource types, and it generates `gotk_resource_info` metrics for:
+- `Kustomization`, `HelmRelease` (sync state, revision, suspended flag)
+- `GitRepository`, `HelmRepository`, `HelmChart`, `OCIRepository` (ready state, URL, revision)
+
+This is what powers the Flux dashboards in Grafana.
 
 ---
 
@@ -187,7 +196,7 @@ Each component has an explicit NetworkPolicy. The cluster uses default-deny, so 
 | Component | Accepts traffic from | Sends traffic to |
 |-----------|---------------------|-----------------|
 | **Grafana** | Tailscale (port 3000) | DNS, K8s API, Prometheus :9090, Loki :3100, internet :443 |
-| **Prometheus** | Grafana (port 9090) | DNS, K8s API, node-exporter :9100 (host IP), kube-state-metrics :8080, alertmanager :9093 |
+| **Prometheus** | Grafana (port 9090) | DNS, K8s API, node-exporter :9100 (host IP), kube-state-metrics :8080, alertmanager :9093, Flux controllers :8080 (flux-system) |
 | **Loki** | Alloy :3100, Grafana :3100 | DNS |
 | **Alloy** | — | DNS, K8s API :443/:6443, Loki :3100 |
 
@@ -209,10 +218,12 @@ Each component has an explicit NetworkPolicy. The cluster uses default-deny, so 
 
 | File | Purpose |
 |------|---------|
-| `kube-prometheus-stack.yaml` | HelmRelease: Prometheus Operator, Prometheus, Alertmanager, kube-state-metrics, node-exporter |
+| `kube-prometheus-stack.yaml` | HelmRelease: Prometheus Operator, Prometheus, Alertmanager, kube-state-metrics (with Flux CRD state), node-exporter |
 | `grafana.yaml` | HelmRelease: Grafana with sidecar auto-discovery for dashboards/datasources |
 | `loki.yaml` | HelmRelease: Loki log storage (SingleBinary, filesystem, Longhorn) |
 | `loki-datasource.yaml` | ConfigMap: Grafana sidecar picks this up to add Loki as a datasource |
 | `prometheus-datasource.yaml` | ConfigMap: Grafana sidecar picks this up to add Prometheus as a datasource |
 | `alloy.yaml` | HelmRelease: Alloy log collector DaemonSet |
+| `flux-podmonitor.yaml` | PodMonitor: tells Prometheus to scrape all Flux controllers (helm/source/kustomize/etc.) in flux-system |
 | `networkpolicy.yaml` | NetworkPolicies for Grafana, Prometheus, Loki, and Alloy |
+| `dashboards/` | Grafana dashboard ConfigMaps (auto-loaded via sidecar): flux-cluster, flux-control-plane, flux-logs, node-exporter |
