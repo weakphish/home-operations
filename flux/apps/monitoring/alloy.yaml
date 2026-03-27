@@ -17,6 +17,12 @@ spec:
         namespace: flux-system
   values:
     alloy:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
       mounts:
         varlog: true
       configMap:

@@ -23,6 +23,12 @@ spec:
     grafana:
       enabled: false
     kube-state-metrics:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
       rbac:
         extraRules:
           - apiGroups:
@@ -172,13 +178,33 @@ spec:
       extraArgs:
         - --collector.systemd
         - --collector.processes
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
       prometheus:
         monitor:
           relabelings:
             # Rename job to "node" for compatibility with Node Exporter Full dashboard (ID 1860)
             - targetLabel: job
               replacement: node
+    alertmanager:
+      alertmanagerSpec:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
     prometheus:
       prometheusSpec:
         scrapeInterval: 30s
         evaluationInterval: 30s
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 768Mi
