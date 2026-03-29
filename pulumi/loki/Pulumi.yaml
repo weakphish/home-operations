@@ -1,0 +1,3 @@
+name: loki
+description: Loki log aggregation and storage — SingleBinary mode with Longhorn-backed filesystem storage
+runtime: nodejs
