@@ -8,7 +8,7 @@ Cloudflare tunnel and Zero Trust configuration for Foundry VTT access.
 - **DnsRecord** - CNAME record pointing `foundry.<domain>` to the tunnel
 - **ZeroTrustTunnelCloudflaredConfig** - Tunnel ingress configuration routing to the Foundry service
 - **ZeroTrustAccessApplication** - Zero Trust application with email-based access policy
-- **Secret** - Kubernetes secret containing the tunnel token (used by cf-connector stack)
+- **Secret** - Kubernetes secret containing the tunnel token (consumed by the `cloudflared` stack)
 
 ## Configuration
 
@@ -23,11 +23,12 @@ Cloudflare tunnel and Zero Trust configuration for Foundry VTT access.
 
 ## Dependencies
 
-- **foundry** stack must be deployed first (creates the `foundry` Kubernetes service)
+None — this is a base stack. The `cloudflared` stack has a StackReference dependency on this stack.
 
 ## Outputs
 
-- `tunnelTokenSecret` - The Kubernetes secret containing the tunnel token
+- `tunnelTokenSecretName` - The name of the Kubernetes secret containing the tunnel token
+- `tunnelSecret` - The tunnel token value (secret)
 
 ## Usage
 
