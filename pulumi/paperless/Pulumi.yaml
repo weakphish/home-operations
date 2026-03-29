@@ -1,0 +1,3 @@
+name: paperless
+description: Paperless-ngx document management — web, worker, scheduler, postgres, redis
+runtime: nodejs

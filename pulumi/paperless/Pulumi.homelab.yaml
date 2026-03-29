@@ -1,0 +1,12 @@
+encryptionsalt: v1:aEPGyYMZB4I=:v1:aBdbu3txRWneZ9fO:XZQ5qyP567+NKPmSYV/8lqnOeRxw8g==
+config:
+  paperless:dbPassword:
+    secure: v1:EpT2i9BtmA85UFNj:BT3zgQ5HSBJJCzKq4De5C/GI3dsJ/BfheVbd7nMCNHyKAIqw1shpI6f8AMVCTUg3
+  paperless:secretKey:
+    secure: v1:pp5MUWVQMsUTdoH8:7lyq1Gny/G23V7kJ+tr2+UVAZY4unQ66j7567JmsIqIQXiil5sZlOPJXqilxg/mC4ixl2kevoQbr+jTW6L6KkozrhR1ym1g+DZchhktI2u0=
+  paperless:adminUser:
+    secure: v1:EYioHdIhfs1/RpXl:Tfx+m9YnVMDkRiZd/JrLb/wAjD1S
+  paperless:adminPassword:
+    secure: v1:vLKDPNJ3xXkOReRu:KE8rGlzK9PZcV4GlnLdg5V6dt6/1XuDQn27bl47Jc0YJeQFd3OQxFTAvBsj0dVIi
+  paperless:adminEmail:
+    secure: v1:cjDW3afJ1DWdHrl5:/iMzlUqTYk8p7TWwzijLjC2bCCQ5ZlKXMTg8Dcn7Pg==
