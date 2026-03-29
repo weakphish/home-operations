@@ -1,0 +1,3 @@
+name: donetick
+description: Donetick chore/task tracker — SQLite-backed, single container
+runtime: nodejs

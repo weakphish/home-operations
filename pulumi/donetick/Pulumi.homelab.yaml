@@ -1,0 +1,4 @@
+encryptionsalt: v1:2zYJF4jkMa4=:v1:vt9lkIVidvnsDJQ9:s9LwKPPFOx9WaBShj5VHfntPAYlaag==
+config:
+  donetick:jwtSecret:
+    secure: v1:Ckw6urTqGg7bMRiU:E3rNgw1H8I836+E3RhB5r+pASXhQPVDAo/bh+L+usTH9sGyhIU+25zWFqgm/JzVHapgcQAJmkY5Eweld
