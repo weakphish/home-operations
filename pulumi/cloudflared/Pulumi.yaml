@@ -1,0 +1,3 @@
+name: cloudflared
+description: Cloudflare Tunnel daemon — outbound connector from cluster to Cloudflare edge for public Foundry access
+runtime: nodejs
