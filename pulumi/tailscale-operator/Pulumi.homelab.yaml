@@ -1,0 +1,6 @@
+encryptionsalt: v1:53lZV0RY5Ls=:v1:oBa7OOtjy29ww+hK:I5FOyQoCdZgCObI6Miusj7k1Yr9Xqw==
+config:
+  tailscale-operator:clientId:
+    secure: v1:O2hLvpSm0IrBcwaX:B7D5ONKbpbfHQB8oOQRcyQW6xF8/qb5Fcq1sxqrJQiZX
+  tailscale-operator:clientSecret:
+    secure: v1:ei0En6+GPXlvQdWb:eM/OTinsPG6Ye78HW0Uwg5MJTv71cPN7iTXUGKLYrwUGVioc4Ryn9Juo2WxDK5tF8h6ZHhKx4cJX61qI3kfxS3lStHvi2PEPOkGPdjSnr1A=
