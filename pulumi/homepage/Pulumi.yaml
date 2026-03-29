@@ -1,0 +1,3 @@
+name: homepage
+description: Homepage dashboard — cluster portal with K8s service discovery and widget integrations
+runtime: nodejs
