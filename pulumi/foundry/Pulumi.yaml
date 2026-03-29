@@ -1,0 +1,3 @@
+name: foundry
+description: Foundry VTT game server — D&D virtual tabletop, exposed via Tailscale and Cloudflare Tunnel
+runtime: nodejs
