@@ -1,0 +1,3 @@
+name: satisfactory
+description: Satisfactory dedicated game server — UDP LoadBalancer via Tailscale, Longhorn persistent save storage
+runtime: nodejs
