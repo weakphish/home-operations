@@ -5,8 +5,7 @@
 
 # Repo Structure
 - `ansible/` - Ansible playbook to bootstrap K3s cluster
-- `pulumi/` - IaC for cloud API resources (Cloudflare tunnel, Tailscale ACL/settings)
-- `flux/` - Flux CD manifests for all in-cluster K8s workloads
+- `pulumi/` - IaC for all K8s workloads and cloud API resources (Cloudflare tunnel/ZT, Tailscale ACL/settings)
 
 # Architecture Notes
 
@@ -21,11 +20,11 @@ flowchart TB
 
     subgraph Tailnet[Tailscale Network]
         Admin[Admin/Internal Users]
+        Members[Tailnet Members]
     end
 
     subgraph IaC[IaC Layer]
-        Pulumi[Pulumi\ncf-tunnel · tailscale ACL]
-        Flux[Flux CD\napp workloads]
+        Pulumi[Pulumi\nall K8s workloads · CF tunnel · Tailscale ACL]
     end
 
     subgraph Cluster[K3s Cluster]
@@ -50,17 +49,18 @@ flowchart TB
                 Grafana[Grafana]
             end
 
-            subgraph Storage
-                FoundryPV[(PV: foundry 50Gi)]
-                PaperlessPVs[(PVs: paperless x5)]
-                DonetickPV[(PV: donetick 10Gi)]
-                SatisfactoryPV[(PVC: satisfactory 25Gi Longhorn)]
-                LokiPV[(PVC: loki 20Gi Longhorn)]
+            subgraph Storage[Storage - Longhorn]
+                FoundryPVC[(PVC: foundry 50Gi)]
+                PaperlessPVCs[(PVCs: paperless x5)]
+                DonetickPVC[(PVC: donetick 10Gi)]
+                SatisfactoryPVC[(PVC: satisfactory 25Gi)]
+                GrafanaPVC[(PVC: grafana 10Gi)]
+                LokiPVC[(PVC: loki 20Gi)]
             end
         end
     end
 
-    Flux -->|reconciles| Cluster
+    Pulumi -->|deploys & manages| Cluster
     Pulumi -->|manages API| CF
     Pulumi -->|manages ACL/DNS| Tailnet
 
@@ -80,17 +80,17 @@ flowchart TB
     Loki -->|datasource via sidecar| Grafana
     TSOperator -->|LoadBalancer UDP| Satisfactory
 
-    Members[Tailnet Members] -->|Tailscale :7777 only| Satisfactory
+    Members -->|Tailscale :7777 only| Satisfactory
 
-    Foundry --> FoundryPV
-    Paperless --> PaperlessPVs
-    Donetick --> DonetickPV
-    Satisfactory --> SatisfactoryPV
-    Loki --> LokiPV
+    Foundry --> FoundryPVC
+    Paperless --> PaperlessPVCs
+    Donetick --> DonetickPVC
+    Satisfactory --> SatisfactoryPVC
+    Grafana --> GrafanaPVC
+    Loki --> LokiPVC
 
     style CF fill:#f6821f
     style TSOperator fill:#4a5568
-    style Flux fill:#5468ff
     style Pulumi fill:#8a6cf7
     style Foundry fill:#7c3aed
     style Homepage fill:#10b981
@@ -107,10 +107,12 @@ flowchart TB
 - **Cloudflare Tunnel**: Public access for Foundry VTT with Zero Trust email allowlist
 - **Tailscale**: Private HTTPS access for all other services via Tailscale Ingress
   - ACL: admin user has full access; all other tailnet members restricted to Satisfactory (port 7777) only
+- **Network Policies**: Default-deny ingress+egress on the `default` namespace; DNS (port 53) and HTTPS (port 443) egress explicitly allowed for all pods
 
 ## IaC Strategy
-- **Pulumi** (`pulumi/`): Cloud API resources only — Cloudflare tunnel/DNS/Zero Trust, Tailscale ACL/MagicDNS/HTTPS settings
-- **Flux CD** (`flux/`): All in-cluster K8s workloads — app deployments, services, ingresses, secrets (SOPS-encrypted), PVs/PVCs
+- **Pulumi** (`pulumi/`): All K8s workloads (deployments, services, ingresses, PVCs, secrets) **and** cloud API resources — Cloudflare tunnel/DNS/Zero Trust, Tailscale ACL/MagicDNS/HTTPS settings
+  - Backend: S3-compatible (Cloudflare R2), not Pulumi Cloud
+  - Secrets: `pulumi config set --secret` / `config.requireSecret()` — encrypted in Pulumi state
 
 # Resources / ideas
 - [Awesome Selfhosting](https://github.com/awesome-selfhosted/awesome-selfhosted)

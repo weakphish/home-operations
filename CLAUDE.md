@@ -14,8 +14,7 @@ When debugging or gathering cluster state, **run `kubectl` and other shell comma
 ## Repository Overview
 
 This is a self-hosted infrastructure repository using:
-- **Pulumi** for cloud API resources (Cloudflare tunnel/DNS/Zero Trust, Tailscale ACL/settings)
-- **Flux CD** for all in-cluster K8s app workloads (GitOps, SOPS-encrypted secrets)
+- **Pulumi** for cloud API resources (Cloudflare tunnel/DNS/Zero Trust, Tailscale ACL/settings) **and all in-cluster K8s app workloads**
 - **Ansible** for K3s cluster bootstrapping
 
 The primary use case is running a Foundry VTT server for D&D sessions, exposed via Cloudflare Tunnel with Zero Trust authentication.
@@ -32,9 +31,7 @@ ansible-playbook playbook.yml -i inventory.yml -kK
 export ANSIBLE_BECOME_EXE=sudo.ws
 ```
 
-### Pulumi (Cloud API Resources)
-
-Only three stacks remain — these manage cloud API resources, not K8s workloads.
+### Pulumi (All K8s Workloads + Cloud API Resources)
 
 ```bash
 cd pulumi/<stack-name>
@@ -43,40 +40,31 @@ pulumi preview --stack homelab
 pulumi up --stack homelab
 ```
 
-Stacks:
-- `cf-k8s` — K3s cluster init and core K8s resources
-- `cf-tunnel` — Cloudflare tunnel, DNS, Zero Trust access application
-- `tailscale` — Tailscale ACL, MagicDNS, HTTPS settings (operator is managed by Flux)
+See the Pulumi Stacks section in Architecture for the full stack list and deploy order.
 
-### Flux CD (App Workloads)
+### Shared TypeScript Library
 
-All app workloads are managed via GitOps. Push changes to the `main` branch and Flux reconciles.
+`pulumi/lib/k8s.ts` contains helpers shared across stacks. Import via relative path:
 
-```bash
-# Check Flux status
-flux get all
-
-# Force immediate reconciliation
-flux reconcile kustomization flux-system --with-source
-
-# View logs for a specific app
-flux logs --kind=HelmRelease --name=<app>
-
-# Suspend/resume reconciliation
-flux suspend kustomization <app>
-flux resume kustomization <app>
+```typescript
+import { makeTailscaleIngress, makeLonghornPVC, SERVICE_IGNORE_CHANGES } from "../lib/k8s";
 ```
 
-Secrets are SOPS-encrypted with Age. To re-export secrets from Pulumi:
-```bash
-SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt python3 scripts/preflight.py
-```
+Each stack's `tsconfig.json` sets `baseUrl: "."` and `paths: { "@pulumi/*": ["./node_modules/@pulumi/*"] }` so TypeScript resolves `@pulumi/*` imports inside `lib/k8s.ts` using the consuming stack's own `node_modules`. The lib has no `package.json` of its own.
 
 ### TypeScript Development (Pulumi)
 
 ```bash
-cd pulumi
-npx tsc --noEmit   # type check
+# Type check a single stack
+cd pulumi/<stack-name>
+npm install
+npx tsc --noEmit
+
+# Deploy in dependency order
+cd pulumi/loki && pulumi up --stack homelab
+cd pulumi/kube-prometheus-stack && pulumi up --stack homelab
+cd pulumi/grafana && pulumi up --stack homelab
+cd pulumi/alloy && pulumi up --stack homelab
 ```
 
 ## Architecture
@@ -91,15 +79,26 @@ npx tsc --noEmit   # type check
 | Layer | Tool | Manages |
 |-------|------|---------|
 | Cloud APIs | Pulumi | CF tunnel/DNS/ZT, Tailscale ACL/DNS/HTTPS |
-| K8s workloads | Flux CD | All app deployments, services, ingresses, secrets, PVs |
+| K8s workloads | Pulumi | All app deployments, services, ingresses, secrets, PVCs |
 | Cluster bootstrap | Ansible | K3s install, kubeconfig |
 
-### Pulumi Microstacks
+### Pulumi Stacks
+
+All stacks use org `weakphish`, stack name `homelab`. Deploy in this order (respects StackReference dependencies):
+
+```
+cf-tunnel → cloudflared
+loki → alloy, grafana
+kube-prometheus-stack → grafana
+```
+
+#### Cloud API stacks
 
 1. **cf-tunnel** (`pulumi/cf-tunnel/`):
    - Cloudflare Tunnel, DNS CNAME records, Zero Trust Access Application
    - Email allowlist policy for Foundry
    - Stores tunnel token as a Kubernetes Secret for cloudflared
+   - Exports: `tunnelTokenSecretName`, `tunnelSecret`
 
 2. **cf-k8s** (`pulumi/cf-k8s/`):
    - K3s cluster initialization and core K8s resources
@@ -107,45 +106,38 @@ npx tsc --noEmit   # type check
 3. **tailscale** (`pulumi/tailscale/`):
    - Tailscale ACL: admin user gets full access, all other members restricted to Satisfactory (port 7777)
    - MagicDNS and HTTPS certificate provisioning enabled
-   - **Note**: Tailscale Kubernetes operator is managed by Flux, not Pulumi
 
-### Flux Apps (`flux/apps/`)
+#### K8s infrastructure stacks
 
-All apps deploy to the `default` namespace unless noted:
+4. **longhorn** (`pulumi/longhorn/`):
+   - Longhorn HelmRelease in `longhorn-system` namespace, `defaultReplicaCount: 1`
+   - Tailscale Ingress at `longhorn.pipefish-manta.ts.net`
 
-All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) by default for private HTTPS access. Satisfactory is the only exception (UDP LoadBalancer).
+5. **tailscale-operator** (`pulumi/tailscale-operator/`):
+   - Tailscale Kubernetes operator HelmRelease in `tailscale` namespace
+   - Config secrets: `clientId`, `clientSecret`
 
-| App | Type | Tailscale URL | Notes |
-|-----|------|--------------|-------|
-| tailscale | HelmRelease | — | Operator in `tailscale` namespace |
-| longhorn | HelmRelease | `longhorn.pipefish-manta.ts.net` | Block storage, `longhorn-system` namespace, `defaultReplicaCount: 1` |
-| cloudflared | Deployment | — | CF tunnel daemon, uses `tunnel-token` secret from Pulumi |
-| foundry | Deployment | `foundry.pipefish-manta.ts.net` | Also via CF tunnel |
-| homepage | Deployment | `homepage.pipefish-manta.ts.net` | K8s cluster discovery |
-| grafana | HelmRelease | `grafana.pipefish-manta.ts.net` | grafana-community/grafana, sidecars for auto dashboard/datasource loading |
-| kube-prometheus-stack | HelmRelease | — | prometheus-community/kube-prometheus-stack, bundles Prometheus Operator, Prometheus, Alertmanager, kube-state-metrics, node-exporter; grafana disabled |
-| alloy | HelmRelease | — | grafana/alloy, DaemonSet log collector → Loki |
-| loki | HelmRelease | — | grafana-community/loki, SingleBinary, filesystem storage, 7-day retention |
-| paperless | Deployment | `paperless.pipefish-manta.ts.net` | web + worker + scheduler + postgres + redis |
-| satisfactory | Deployment | UDP LoadBalancer | runs on new-bermuda |
-| donetick | Deployment | `donetick.pipefish-manta.ts.net` | SQLite, single container |
-| network-policies | Kustomization | — | default-deny + per-app allow rules |
+6. **network-policies** (`pulumi/network-policies/`):
+   - Default-deny Ingress+Egress NetworkPolicy for `default` namespace
+   - Allow-DNS-egress NetworkPolicy (UDP/TCP 53) for all pods
 
-### Flux Bootstrap
+#### App stacks (all `default` namespace)
 
-```bash
-kubectl create namespace flux-system
-kubectl create secret generic sops-age \
-  --namespace=flux-system \
-  --from-file=age.agekey=$HOME/.config/sops/age/keys.txt
+7. **cloudflared** (`pulumi/cloudflared/`): StackRef → cf-tunnel; CF tunnel daemon Deployment
+8. **foundry** (`pulumi/foundry/`): Longhorn PVC 50Gi, Recreate Deployment, Service:30000, Tailscale Ingress; config secrets: `foundryUsername`, `foundryPassword`, `licenseKey`, `adminKey`
+9. **homepage** (`pulumi/homepage/`): RBAC + ConfigMap (all 7 config files) + Deployment + Tailscale Ingress
+10. **donetick** (`pulumi/donetick/`): Longhorn PVC 10Gi, Recreate Deployment, Tailscale Ingress; config secret: `jwtSecret`
+11. **satisfactory** (`pulumi/satisfactory/`): Longhorn PVC 25Gi, Recreate Deployment, Tailscale LoadBalancer Service (TCP+UDP 7777, TCP 8888)
+12. **paperless** (`pulumi/paperless/`): Nested components — `PaperlessDatabase` (postgres:16.12), `PaperlessCache` (redis:7.4.7), `PaperlessApp` (web+worker+scheduler); Longhorn PVCs; Tailscale Ingress; config secrets: `dbPassword`, `secretKey`, `adminUser`, `adminPassword`, `adminEmail`
 
-flux bootstrap github \
-  --owner=weakfish \
-  --repository=self-hosted \
-  --branch=main \
-  --path=flux/flux-system \
-  --personal
-```
+#### Monitoring stacks (all `default` namespace)
+
+13. **kube-prometheus-stack** (`pulumi/kube-prometheus-stack/`): prometheus-community chart v82.15.1, scrapeInterval=30s, grafana disabled; exports `prometheusServiceUrl`, `alertmanagerServiceUrl`
+14. **loki** (`pulumi/loki/`): grafana-community/loki v9.3.3, SingleBinary, filesystem storage, 168h retention, TSDB schema v13; exports `lokiServiceUrl`
+15. **alloy** (`pulumi/alloy/`): StackRef → loki; grafana/alloy v1.6.2 DaemonSet, River config for pod log tailing + K8s events → Loki
+16. **grafana** (`pulumi/grafana/`): StackRefs → kube-prometheus-stack + loki; grafana-community/grafana v11.3.6, sidecar datasource/dashboard discovery, Longhorn PVC 10Gi, Tailscale Ingress; config secrets: `adminUser`, `adminPassword`
+
+All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) at `*.pipefish-manta.ts.net`. Satisfactory uses Tailscale LoadBalancer instead (UDP incompatible with Ingress).
 
 ### Ansible Structure
 
@@ -157,20 +149,20 @@ flux bootstrap github \
 
 ### Storage
 
-Most storage uses hostPath (`storageClassName: manual`) — node-pinned to new-bermuda. Satisfactory and Grafana/Prometheus use Longhorn dynamic provisioning.
+All PVCs use Longhorn dynamic provisioning (`storageClassName: longhorn`).
 
-| App | Size | Path |
-|-----|------|------|
-| Foundry | 50Gi | `/home/jack/foundrydata` |
-| Paperless data | 10Gi | `/home/jack/paperless/data` |
-| Paperless media | 50Gi | `/home/jack/paperless/media` |
-| Paperless consume | 10Gi | `/home/jack/paperless/consume` |
-| Paperless postgres | 10Gi | `/home/jack/paperless/postgres` |
-| Paperless redis | 1Gi | `/home/jack/paperless/redis` |
-| Donetick | 10Gi | `/home/jack/donetick/data` |
-| Satisfactory | 25Gi | Longhorn (dynamic) |
-| Grafana | 10Gi | Longhorn (dynamic) |
-| Loki | 20Gi | Longhorn (dynamic) |
+| App | PVC Name | Size |
+|-----|----------|------|
+| Foundry | foundry-data-claim | 50Gi |
+| Paperless data | paperless-data-claim | 10Gi |
+| Paperless media | paperless-media-claim | 50Gi |
+| Paperless consume | paperless-consume-claim | 10Gi |
+| Paperless postgres | paperless-postgres-claim | 10Gi |
+| Paperless redis | paperless-redis-claim | 1Gi |
+| Donetick | donetick-data-claim | 10Gi |
+| Satisfactory | satisfactory-claim | 25Gi |
+| Grafana | (Helm-managed) | 10Gi |
+| Loki | (Helm-managed) | 20Gi |
 
 ### Networking
 
@@ -194,25 +186,19 @@ Tailscale services at `*.pipefish-manta.ts.net`:
 - `tailscale`: Tailscale operator (Helm chart requirement)
 - `longhorn-system`: Longhorn storage
 - `kube-system`: system components
-- `flux-system`: Flux CD controllers
 
 ### Secrets Management
 
-Secrets are SOPS-encrypted with Age key at `~/.config/sops/age/keys.txt`. Rules in `.sops.yaml` cover `flux/apps/*/secret.yaml`. Run `scripts/preflight.py` to re-export from Pulumi and re-encrypt.
+Secrets are managed via Pulumi config: `pulumi config set --secret <key> <value>` and accessed with `config.requireSecret()` in TypeScript. Encrypted in Pulumi state (backend: Cloudflare R2). SOPS/Age and `scripts/preflight.py` are no longer used.
 
 ### Recent Architecture Changes
 
-- **Flux CD Migration**: All K8s app workloads migrated from Pulumi microstacks to Flux CD GitOps. Pulumi now manages only cloud API resources (CF tunnel, Tailscale ACL/settings).
-- **SOPS Secrets**: App secrets encrypted at rest in Git with Age/SOPS. `scripts/preflight.py` exports from Pulumi and encrypts.
-- **Tailscale Operator**: Moved from Pulumi tailscale stack to Flux HelmRelease.
-- **Longhorn Restored**: Longhorn re-added as a Flux HelmRelease in `longhorn-system`. `defaultReplicaCount: 1` (single storage node). Grafana and Satisfactory PVCs use Longhorn dynamic provisioning.
-- **Portainer Removed**: Removed from cluster.
-- **Dashdot Removed**: Removed from cluster.
-- **Tailscale Ingress Default**: All HTTP apps use `ingressClassName: tailscale`. Satisfactory retains UDP LoadBalancer.
-- **Glance → Homepage**: Replaced with Homepage dashboard using K8s cluster discovery mode.
-- **Vikunja → Donetick**: Replaced with Donetick (SQLite, single container, simpler).
-- **Monitoring Stack Replaced**: Standalone prometheus, loki, and k8s-monitoring (Alloy) replaced with `kube-prometheus-stack` (Prometheus Operator + Prometheus + Alertmanager + kube-state-metrics + node-exporter). Grafana uses grafana-community chart with sidecars for auto dashboard/datasource loading from kube-prometheus-stack ConfigMaps.
-- **Alloy + Loki Added**: Grafana Alloy (DaemonSet) collects pod logs and K8s events, ships to Loki (SingleBinary, filesystem, Longhorn). Grafana auto-discovers Loki datasource via sidecar ConfigMap. See `flux/apps/monitoring/README.md` for monitoring stack details.
-- **Single-Node Cluster**: infinite-granite removed; new-bermuda is now the sole node running all workloads.
+- **Pulumi Migration**: All K8s app workloads migrated from Flux CD GitOps to Pulumi TypeScript microstacks. Flux fully uninstalled. Secrets now use `config.requireSecret()` (Pulumi encrypted state) rather than SOPS/Age.
+- **Tailscale Operator**: Moved to dedicated `pulumi/tailscale-operator/` stack.
+- **Longhorn**: Dedicated `pulumi/longhorn/` stack. All PVCs now use Longhorn dynamic provisioning.
+- **All Storage → Longhorn**: Previously most PVCs used hostPath (`storageClassName: manual`); all now use Longhorn.
+- **Network Policies**: Dedicated `pulumi/network-policies/` stack — default-deny + allow-DNS for `default` namespace.
+- **Tailscale Ingress Default**: All HTTP apps use `ingressClassName: tailscale`. Satisfactory uses Tailscale LoadBalancer.
+- **Monitoring Stack**: `kube-prometheus-stack` (Prometheus Operator + Prometheus + Alertmanager) + Loki (SingleBinary, filesystem, 7-day retention) + Alloy (DaemonSet log collector) + Grafana (sidecar datasource/dashboard discovery via ConfigMap labels).
+- **Single-Node Cluster**: new-bermuda is the sole node (control plane + workloads).
 - **Namespace Consolidation**: All app workloads in `default` namespace.
-- **Network Policies**: Default-deny egress/ingress added, with per-app allow rules for foundry, homepage, donetick, paperless, satisfactory, and monitoring stack.

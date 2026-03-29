@@ -12,3 +12,16 @@ tofu/*.tfstate.backup
 tofu/secrets.auto.tfvars
 tofu/.terraform.lock.hcl
 *.tfvars
+/pulumi/alloy/node_modules
+/pulumi/cloudflared/node_modules
+/pulumi/donetick/node_modules
+/pulumi/foundry/node_modules
+/pulumi/grafana/node_modules
+/pulumi/homepage/node_modules
+/pulumi/kube-prometheus-stack/node_modules
+/pulumi/loki/node_modules
+/pulumi/longhorn/node_modules
+/pulumi/network-policies/node_modules
+/pulumi/paperless/node_modules
+/pulumi/satisfactory/node_modules
+/pulumi/tailscale-operator/node_modules
