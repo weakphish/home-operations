@@ -1,0 +1,3 @@
+name: grafana
+description: Grafana dashboarding — Prometheus and Loki datasources auto-loaded via sidecar ConfigMaps
+runtime: nodejs

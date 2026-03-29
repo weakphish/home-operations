@@ -1,0 +1,6 @@
+encryptionsalt: v1:JvZVuLsm1vY=:v1:+VDDPKoAQ0dK+JvK:pzdVWYtVoOUWx40Psqj4njSjxBgYLw==
+config:
+  grafana:adminUser:
+    secure: v1:UMDYy/54SqUQbppZ:iKZUIKgnb+2oH03tc1WKbtAgrzFs
+  grafana:adminPassword:
+    secure: v1:opi6IfXpnj0rUlLe:ng1/aVAagwmGskbWi16iS4uf4eWKDWud700=

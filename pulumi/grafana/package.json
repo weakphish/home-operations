@@ -1,0 +1,13 @@
+{
+  "name": "grafana",
+  "main": "bin/index.js",
+  "scripts": { "build": "tsc" },
+  "dependencies": {
+    "@pulumi/pulumi": "^3.0.0",
+    "@pulumi/kubernetes": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.0.0"
+  }
+}
