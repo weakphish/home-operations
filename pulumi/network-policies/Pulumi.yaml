@@ -1,0 +1,3 @@
+name: network-policies
+description: Default-deny NetworkPolicies for the default namespace with DNS egress exception
+runtime: nodejs
