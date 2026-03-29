@@ -1,0 +1,3 @@
+name: alloy
+description: Grafana Alloy DaemonSet log collector — ships pod logs and K8s events to Loki
+runtime: nodejs
