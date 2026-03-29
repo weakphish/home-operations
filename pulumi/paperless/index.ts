@@ -70,6 +70,10 @@ class PaperlessDatabase extends pulumi.ComponentResource {
                                 {
                                     name: "postgres",
                                     image: "postgres:16.12",
+                                    resources: {
+                                        requests: { cpu: "50m", memory: "128Mi" },
+                                        limits: { cpu: "500m", memory: "512Mi" },
+                                    },
                                     env: [
                                         { name: "POSTGRES_DB", value: DB_NAME },
                                         { name: "POSTGRES_USER", value: DB_USER },
@@ -172,6 +176,10 @@ class PaperlessCache extends pulumi.ComponentResource {
                                 {
                                     name: "redis",
                                     image: "redis:7.4.7",
+                                    resources: {
+                                        requests: { cpu: "50m", memory: "64Mi" },
+                                        limits: { cpu: "200m", memory: "256Mi" },
+                                    },
                                     readinessProbe: {
                                         exec: { command: ["redis-cli", "ping"] },
                                         initialDelaySeconds: 5,
@@ -328,6 +336,10 @@ class PaperlessApp extends pulumi.ComponentResource {
             { name: "PAPERLESS_DBNAME", value: DB_NAME },
             { name: "PAPERLESS_OCR_LANGUAGE", value: "eng" },
             { name: "PAPERLESS_TIME_ZONE", value: "America/New_York" },
+            // Limit OCR concurrency to 1 worker / 1 thread to prevent OOM kills
+            // during document ingestion on this single-node cluster.
+            { name: "PAPERLESS_TASK_WORKERS", value: "1" },
+            { name: "PAPERLESS_THREADS_PER_WORKER", value: "1" },
         ];
 
         new kubernetes.apps.v1.Deployment(
@@ -345,6 +357,12 @@ class PaperlessApp extends pulumi.ComponentResource {
                                     name: "paperless",
                                     image: "ghcr.io/paperless-ngx/paperless-ngx:latest",
                                     env: appEnv,
+                                    resources: {
+                                        requests: { cpu: "100m", memory: "512Mi" },
+                                        // 3Gi headroom: gunicorn + inline celery + OCR can spike
+                                        // hard even with THREADS_PER_WORKER=1.
+                                        limits: { cpu: "1", memory: "3Gi" },
+                                    },
                                     // The Host header override is required because Paperless
                                     // validates the Host header against PAPERLESS_URL — without it,
                                     // the readiness check would fail with a 400 Bad Request.
@@ -393,6 +411,10 @@ class PaperlessApp extends pulumi.ComponentResource {
                                         "INFO",
                                     ],
                                     env: appEnv,
+                                    resources: {
+                                        requests: { cpu: "100m", memory: "512Mi" },
+                                        limits: { cpu: "1", memory: "2Gi" },
+                                    },
                                     volumeMounts: appVolumeMounts,
                                 },
                             ],
@@ -427,6 +449,10 @@ class PaperlessApp extends pulumi.ComponentResource {
                                         "INFO",
                                     ],
                                     env: appEnv,
+                                    resources: {
+                                        requests: { cpu: "50m", memory: "128Mi" },
+                                        limits: { cpu: "200m", memory: "256Mi" },
+                                    },
                                     volumeMounts: appVolumeMounts,
                                 },
                             ],

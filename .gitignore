@@ -1,5 +1,4 @@
 .worktrees/
-pulumi/node_modules
 pulumi/cf-tunnel/node_modules
 pulumi/cf-tunnel/node_modules
 pulumi/monitoring/node_modules

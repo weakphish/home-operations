@@ -52,6 +52,8 @@ import { makeTailscaleIngress, makeLonghornPVC, SERVICE_IGNORE_CHANGES } from ".
 
 Each stack's `tsconfig.json` sets `baseUrl: "."` and `paths: { "@pulumi/*": ["./node_modules/@pulumi/*"] }` so TypeScript resolves `@pulumi/*` imports inside `lib/k8s.ts` using the consuming stack's own `node_modules`. The lib has no `package.json` of its own.
 
+**Important:** `tsconfig` `paths` only affects the TypeScript compiler — the Node.js runtime resolves modules by walking up the directory tree from the file's location. Because `lib/k8s.ts` lives at `pulumi/lib/`, Node looks for `node_modules` at `pulumi/lib/`, `pulumi/`, etc. — never inside a stack subdirectory. To fix this, `pulumi/node_modules/@pulumi/` contains symlinks into `pulumi/paperless/node_modules/@pulumi/` so all stacks can resolve the shared lib at runtime. If you add a new stack, ensure these symlinks are still valid.
+
 ### TypeScript Development (Pulumi)
 
 ```bash
