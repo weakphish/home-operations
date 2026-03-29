@@ -1,0 +1,3 @@
+name: kube-prometheus-stack
+description: Prometheus Operator + Prometheus + Alertmanager + kube-state-metrics + node-exporter
+runtime: nodejs
