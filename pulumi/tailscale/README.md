@@ -1,27 +1,28 @@
 # tailscale
 
-Tailscale operator for Kubernetes, enabling Tailscale-based ingress and service exposure.
+Tailscale ACL, DNS, and HTTPS certificate configuration for the tailnet.
 
 ## Resources Created
 
-- **Namespace** - Dedicated `tailscale` namespace
-- **Helm Release** - Tailscale operator chart
+- **TailnetPolicy** - ACL policy: admin user gets full access; all other members restricted to Satisfactory (UDP/TCP 7777)
+- **DnsPreferences** - MagicDNS enabled
+- **DnsSearchPaths** / **DnsNameservers** - Tailnet DNS configuration
+- **DeviceSubnetRoutes** / settings - HTTPS certificate provisioning enabled
 
 ## Configuration
 
 | Key | Description |
 |-----|-------------|
-| `tailscale:tailscale.clientId` | Tailscale OAuth client ID |
-| `tailscale:tailscale.clientSecret` | Tailscale OAuth client secret |
+| `tailscale:apiKey` | Tailscale API key |
+| `tailscale:tailnet` | Tailnet name (e.g., `example.com`) |
 
 ## Dependencies
 
-None - this is a base stack.
+None — this is a base stack.
 
 ## Outputs
 
-- `tailscaleNs` - The tailscale namespace
-- `tailscaleOperator` - The Helm release
+None.
 
 ## Usage
 
@@ -32,5 +33,5 @@ pulumi up --stack homelab
 
 ## Notes
 
-- Creates OAuth credentials for the Tailscale operator
-- Other stacks can use Tailscale annotations for service exposure
+- This stack manages ACL/DNS/HTTPS policy for the tailnet via the Tailscale API — it does **not** install the Kubernetes operator.
+- The Tailscale Kubernetes operator is managed separately in `pulumi/tailscale-operator/`.
