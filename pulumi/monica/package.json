@@ -1,0 +1,13 @@
+{
+  "name": "monica",
+  "main": "bin/monica/index.js",
+  "scripts": { "build": "tsc" },
+  "devDependencies": {
+    "@types/node": "^18",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@pulumi/kubernetes": "^4.0.0",
+    "@pulumi/pulumi": "^3.113.0"
+  }
+}
