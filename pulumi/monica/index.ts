@@ -213,9 +213,10 @@ class MonicaStack extends pulumi.ComponentResource {
                                                 },
                                             },
                                         },
-                                        // Signup disabled — create your account first, then lock it down.
-                                        // v5 inverts the signup flag from ALLOW_SIGNUP to APP_DISABLE_SIGNUP.
-                                        { name: "APP_DISABLE_SIGNUP", value: "true" },
+                                        // Open signup behind Tailscale. Mail verification disabled since
+                                        // MAIL_MAILER=log means verification emails are never sent.
+                                        { name: "APP_DISABLE_SIGNUP", value: "false" },
+                                        { name: "APP_SIGNUP_DOUBLE_OPTIN", value: "false" },
                                         // Stub mail to Laravel's log driver — no SMTP required.
                                         // Replace with real MAIL_* vars when ready.
                                         { name: "MAIL_MAILER", value: "log" },
