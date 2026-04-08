@@ -185,7 +185,7 @@ class MonicaStack extends pulumi.ComponentResource {
                             containers: [
                                 {
                                     name: "monica",
-                                    image: "monicahq/monica:5",
+                                    image: "ghcr.io/monicahq/monica-next:main",
                                     ports: [{ name: "http", containerPort: 80, protocol: "TCP" }],
                                     env: [
                                         { name: "APP_ENV", value: "production" },
@@ -214,20 +214,15 @@ class MonicaStack extends pulumi.ComponentResource {
                                                 },
                                             },
                                         },
-                                        {
-                                            name: "HASH_SALT",
-                                            valueFrom: {
-                                                secretKeyRef: {
-                                                    name: secret.metadata.name,
-                                                    key: "hashSalt",
-                                                },
-                                            },
-                                        },
                                         // Open signup is safe: all traffic goes through Tailscale private network.
-                                        { name: "ALLOW_SIGNUP", value: "true" },
+                                        // v5 inverts the signup flag from ALLOW_SIGNUP to APP_DISABLE_SIGNUP.
+                                        { name: "APP_DISABLE_SIGNUP", value: "false" },
                                         // Stub mail to Laravel's log driver — no SMTP required.
                                         // Replace with real MAIL_* vars when ready.
                                         { name: "MAIL_MAILER", value: "log" },
+                                        // Monica runs behind Tailscale Ingress (a reverse proxy);
+                                        // trust all proxies so APP_URL https:// links generate correctly.
+                                        { name: "APP_TRUSTED_PROXIES", value: "*" },
                                     ],
                                     volumeMounts: [
                                         {
