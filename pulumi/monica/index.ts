@@ -213,9 +213,9 @@ class MonicaStack extends pulumi.ComponentResource {
                                                 },
                                             },
                                         },
-                                        // Open signup is safe: all traffic goes through Tailscale private network.
+                                        // Signup disabled — create your account first, then lock it down.
                                         // v5 inverts the signup flag from ALLOW_SIGNUP to APP_DISABLE_SIGNUP.
-                                        { name: "APP_DISABLE_SIGNUP", value: "false" },
+                                        { name: "APP_DISABLE_SIGNUP", value: "true" },
                                         // Stub mail to Laravel's log driver — no SMTP required.
                                         // Replace with real MAIL_* vars when ready.
                                         { name: "MAIL_MAILER", value: "log" },
