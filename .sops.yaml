@@ -1,5 +1,0 @@
-creation_rules:
-  - path_regex: tofu/secrets\.auto\.tfvars\.sops$
-    age: age15d84y5lsrjj5y3uhjpau8vd9d5aaz7c4hctgh9lx3qqnep8cf4sq5hvpge
-  - path_regex: flux/apps/.*/secret\.yaml$
-    age: age15d84y5lsrjj5y3uhjpau8vd9d5aaz7c4hctgh9lx3qqnep8cf4sq5hvpge
