@@ -18,7 +18,6 @@ import { makeLonghornPVC, makeTailscaleIngress, SERVICE_IGNORE_CHANGES } from ".
 const config = new pulumi.Config();
 const dbPassword = config.requireSecret("dbPassword");
 const appKey = config.requireSecret("appKey");
-const hashSalt = config.requireSecret("hashSalt");
 
 /**
  * Provisions all Kubernetes resources for Monica CRM, a self-hosted personal
@@ -36,7 +35,7 @@ class MonicaStack extends pulumi.ComponentResource {
             {
                 metadata: { name: "monica-secret", namespace: "default" },
                 type: "Opaque",
-                stringData: { dbPassword, appKey, hashSalt },
+                stringData: { dbPassword, appKey },
             },
             { parent: this },
         );
