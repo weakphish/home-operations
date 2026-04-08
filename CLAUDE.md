@@ -129,15 +129,17 @@ kube-prometheus-stack → grafana
 8. **foundry** (`pulumi/foundry/`): Longhorn PVC 50Gi, Recreate Deployment, Service:30000, Tailscale Ingress; config secrets: `foundryUsername`, `foundryPassword`, `licenseKey`, `adminKey`
 9. **homepage** (`pulumi/homepage/`): RBAC + ConfigMap (all 7 config files) + Deployment + Tailscale Ingress
 10. **donetick** (`pulumi/donetick/`): Longhorn PVC 10Gi, Recreate Deployment, Tailscale Ingress; config secret: `jwtSecret`
-11. **satisfactory** (`pulumi/satisfactory/`): Longhorn PVC 25Gi, Recreate Deployment, Tailscale LoadBalancer Service (TCP+UDP 7777, TCP 8888)
-12. **paperless** (`pulumi/paperless/`): Nested components — `PaperlessDatabase` (postgres:16.12), `PaperlessCache` (redis:7.4.7), `PaperlessApp` (web+worker+scheduler); Longhorn PVCs; Tailscale Ingress; config secrets: `dbPassword`, `secretKey`, `adminUser`, `adminPassword`, `adminEmail`
+11. **homebox** (`pulumi/homebox/`): Longhorn PVC 10Gi, Recreate Deployment, rootless Homebox container, Tailscale Ingress
+12. **monica** (`pulumi/monica/`): Longhorn PVCs (DB 5Gi, data 10Gi), MariaDB 10.11, `ghcr.io/monicahq/monica-next:main`, Recreate Deployments, Tailscale Ingress; config secrets: `dbPassword`, `appKey`
+13. **satisfactory** (`pulumi/satisfactory/`): Longhorn PVC 25Gi, Recreate Deployment, Tailscale LoadBalancer Service (TCP+UDP 7777, TCP 8888)
+14. **paperless** (`pulumi/paperless/`): Nested components — `PaperlessDatabase` (postgres:16.12), `PaperlessCache` (redis:7.4.7), `PaperlessApp` (web+worker+scheduler); Longhorn PVCs; Tailscale Ingress; config secrets: `dbPassword`, `secretKey`, `adminUser`, `adminPassword`, `adminEmail`
 
 #### Monitoring stacks (all `default` namespace)
 
-13. **kube-prometheus-stack** (`pulumi/kube-prometheus-stack/`): prometheus-community chart v82.15.1, scrapeInterval=30s, grafana disabled; exports `prometheusServiceUrl`, `alertmanagerServiceUrl`
-14. **loki** (`pulumi/loki/`): grafana-community/loki v9.3.3, SingleBinary, filesystem storage, 168h retention, TSDB schema v13; exports `lokiServiceUrl`
-15. **alloy** (`pulumi/alloy/`): StackRef → loki; grafana/alloy v1.6.2 DaemonSet, River config for pod log tailing + K8s events → Loki
-16. **grafana** (`pulumi/grafana/`): StackRefs → kube-prometheus-stack + loki; grafana-community/grafana v11.3.6, sidecar datasource/dashboard discovery, Longhorn PVC 10Gi, Tailscale Ingress; config secrets: `adminUser`, `adminPassword`
+15. **kube-prometheus-stack** (`pulumi/kube-prometheus-stack/`): prometheus-community chart v82.15.1, scrapeInterval=30s, grafana disabled; exports `prometheusServiceUrl`, `alertmanagerServiceUrl`
+16. **loki** (`pulumi/loki/`): grafana-community/loki v9.3.3, SingleBinary, filesystem storage, 168h retention, TSDB schema v13; exports `lokiServiceUrl`
+17. **alloy** (`pulumi/alloy/`): StackRef → loki; grafana/alloy v1.6.2 DaemonSet, River config for pod log tailing + K8s events → Loki
+18. **grafana** (`pulumi/grafana/`): StackRefs → kube-prometheus-stack + loki; grafana-community/grafana v11.3.6, sidecar datasource/dashboard discovery, Longhorn PVC 10Gi, Tailscale Ingress; config secrets: `adminUser`, `adminPassword`
 
 All HTTP apps use **Tailscale Ingress** (`ingressClassName: tailscale`) at `*.pipefish-manta.ts.net`. Satisfactory uses Tailscale LoadBalancer instead (UDP incompatible with Ingress).
 
@@ -162,6 +164,9 @@ All PVCs use Longhorn dynamic provisioning (`storageClassName: longhorn`).
 | Paperless postgres | paperless-postgres-claim | 10Gi |
 | Paperless redis | paperless-redis-claim | 1Gi |
 | Donetick | donetick-data-claim | 10Gi |
+| Homebox | homebox-data-claim | 10Gi |
+| Monica DB | monica-db-claim | 5Gi |
+| Monica data | monica-data-claim | 10Gi |
 | Satisfactory | satisfactory-claim | 25Gi |
 | Grafana | (Helm-managed) | 10Gi |
 | Loki | (Helm-managed) | 20Gi |
@@ -173,7 +178,7 @@ All PVCs use Longhorn dynamic provisioning (`storageClassName: longhorn`).
 - **Private**: Tailscale Ingress (HTTPS) for all HTTP services; UDP LoadBalancer for Satisfactory
 
 Tailscale services at `*.pipefish-manta.ts.net`:
-- foundry, homepage, grafana, paperless, donetick
+- foundry, homepage, grafana, paperless, donetick, homebox, monica
 - Prometheus/Alertmanager: internal only (bundled in kube-prometheus-stack, no Tailscale ingress)
 - Loki: internal only (log storage, no Tailscale ingress)
 - Satisfactory: UDP LoadBalancer (game ports incompatible with Ingress)

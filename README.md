@@ -39,6 +39,8 @@ flowchart TB
                 Homepage[Homepage Dashboard]
                 Paperless[Paperless-ngx]
                 Donetick[Donetick]
+                Homebox[Homebox]
+                Monica[Monica CRM]
                 Satisfactory[Satisfactory Server]
             end
 
@@ -53,6 +55,8 @@ flowchart TB
                 FoundryPVC[(PVC: foundry 50Gi)]
                 PaperlessPVCs[(PVCs: paperless x5)]
                 DonetickPVC[(PVC: donetick 10Gi)]
+                HomeboxPVC[(PVC: homebox 10Gi)]
+                MonicaPVCs[(PVCs: monica DB 5Gi + data 10Gi)]
                 SatisfactoryPVC[(PVC: satisfactory 25Gi)]
                 GrafanaPVC[(PVC: grafana 10Gi)]
                 LokiPVC[(PVC: loki 20Gi)]
@@ -74,6 +78,8 @@ flowchart TB
     TSOperator -->|Ingress HTTPS| Homepage
     TSOperator -->|Ingress HTTPS| Paperless
     TSOperator -->|Ingress HTTPS| Donetick
+    TSOperator -->|Ingress HTTPS| Homebox
+    TSOperator -->|Ingress HTTPS| Monica
     TSOperator -->|Ingress HTTPS| Grafana
     KPS -->|datasources/dashboards via sidecar| Grafana
     Alloy -->|push logs| Loki
@@ -85,6 +91,8 @@ flowchart TB
     Foundry --> FoundryPVC
     Paperless --> PaperlessPVCs
     Donetick --> DonetickPVC
+    Homebox --> HomeboxPVC
+    Monica --> MonicaPVCs
     Satisfactory --> SatisfactoryPVC
     Grafana --> GrafanaPVC
     Loki --> LokiPVC
@@ -101,6 +109,8 @@ flowchart TB
     style Loki fill:#2196f3
     style Paperless fill:#17541f
     style Donetick fill:#0ea5e9
+    style Homebox fill:#14b8a6
+    style Monica fill:#ec4899
 ```
 
 ## Networking
@@ -114,7 +124,12 @@ flowchart TB
   - Backend: S3-compatible (Cloudflare R2), not Pulumi Cloud
   - Secrets: `pulumi config set --secret` / `config.requireSecret()` — encrypted in Pulumi state
 
-# Resources / ideas
+## Setting up Pulumi 
+- Install AWS CLI
+- Set AWS profile up with [Cloudflare R2](https://developers.cloudflare.com/r2/examples/aws/aws-cli/) (for state back-end access)
+- Set passphrase in environment
+
+## Resources / ideas
 - [Awesome Selfhosting](https://github.com/awesome-selfhosted/awesome-selfhosted)
 - [K8s selfhosting reddit thread](https://www.reddit.com/r/selfhosted/comments/85rj9d/kubernetes_anyone_use_this_for_their_home_systems/)
 - [Maintaining containers for various self-hosted services on a single machine](https://www.reddit.com/r/selfhosted/comments/k3jwkd/maintaining_containers_for_various_selfhosted/)
