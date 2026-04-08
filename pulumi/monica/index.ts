@@ -28,7 +28,7 @@ class MonicaStack extends pulumi.ComponentResource {
     constructor(name: string, opts?: pulumi.ComponentResourceOptions) {
         super("homelab:apps:MonicaStack", name, {}, opts);
 
-        // All three secrets share a single K8s Secret so the Monica Deployment
+        // Both secrets share a single K8s Secret so the Monica Deployment
         // and the MariaDB Deployment can both reference it.
         const secret = new kubernetes.core.v1.Secret(
             "monica-secret",

@@ -1,0 +1,6 @@
+encryptionsalt: v1:IdKb2jjQCa8=:v1:dneZrPoHl6YSSh/1:cWKyMUAIyJFfukoFsKzhwCCRUJXOqQ==
+config:
+  monica:dbPassword:
+    secure: v1:lRs6W1xScEYW7pZE:UVgIvs562kOkXM1OihD9Gel+V9aWLOllmnQ+baQX7r+PFKI/
+  monica:appKey:
+    secure: v1:IAokHNpYxO8nLH2X:2RF6thOBxUBh8Cv0tKC2PUSJSxmhx0W3negb/SUBhlQDrk5/2QAsx2tJGvpddoo6v1QquBZAdwbDvM+3w8fey+lHFQ==
