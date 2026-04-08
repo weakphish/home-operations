@@ -1,3 +1,16 @@
+// To import existing resources into this stack, run:
+//   pulumi import 'kubernetes:core/v1:Secret' monica-secret 'default/monica-secret'
+//   pulumi import 'kubernetes:core/v1:PersistentVolumeClaim' monica-db 'default/monica-db-claim'
+//   pulumi import 'kubernetes:apps/v1:Deployment' monica-db 'default/monica-db'
+//   pulumi import 'kubernetes:core/v1:Service' monica-db 'default/monica-db'
+//   pulumi import 'kubernetes:core/v1:PersistentVolumeClaim' monica-data 'default/monica-data-claim'
+//   pulumi import 'kubernetes:apps/v1:Deployment' monica 'default/monica'
+//   pulumi import 'kubernetes:core/v1:Service' monica 'default/monica'
+//   pulumi import 'kubernetes:networking.k8s.io/v1:Ingress' monica 'default/monica'
+//   pulumi import 'kubernetes:networking.k8s.io/v1:NetworkPolicy' allow-tailscale-to-monica 'default/allow-tailscale-to-monica'
+//   pulumi import 'kubernetes:networking.k8s.io/v1:NetworkPolicy' allow-monica-to-mariadb 'default/allow-monica-to-mariadb'
+//   pulumi import 'kubernetes:networking.k8s.io/v1:NetworkPolicy' allow-mariadb-from-monica 'default/allow-mariadb-from-monica'
+
 import * as pulumi from "@pulumi/pulumi";
 import * as kubernetes from "@pulumi/kubernetes";
 import { makeLonghornPVC, makeTailscaleIngress, SERVICE_IGNORE_CHANGES } from "../lib/k8s";
@@ -210,6 +223,7 @@ class MonicaStack extends pulumi.ComponentResource {
                                                 },
                                             },
                                         },
+                                        // Open signup is safe: all traffic goes through Tailscale private network.
                                         { name: "ALLOW_SIGNUP", value: "true" },
                                         // Stub mail to Laravel's log driver — no SMTP required.
                                         // Replace with real MAIL_* vars when ready.
@@ -238,7 +252,7 @@ class MonicaStack extends pulumi.ComponentResource {
                                         failureThreshold: 3,
                                     },
                                     resources: {
-                                        requests: { cpu: "50m", memory: "128Mi" },
+                                        requests: { cpu: "50m", memory: "256Mi" },
                                         limits: { cpu: "1000m", memory: "512Mi" },
                                     },
                                 },
