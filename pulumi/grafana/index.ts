@@ -3,6 +3,7 @@
 //   pulumi import 'kubernetes:core/v1:Secret' grafana-admin-secret 'default/grafana-admin-secret'
 //   pulumi import 'kubernetes:core/v1:ConfigMap' prometheus-datasource 'default/prometheus-datasource'
 //   pulumi import 'kubernetes:core/v1:ConfigMap' loki-datasource 'default/loki-datasource'
+//   pulumi import 'kubernetes:networking.k8s.io/v1:NetworkPolicy' grafana-network-policy 'default/grafana'
 
 import * as pulumi from "@pulumi/pulumi";
 import * as kubernetes from "@pulumi/kubernetes";
@@ -88,6 +89,109 @@ datasources:
     jsonData:
       maxLines: 1000
 `,
+                },
+            },
+            { parent: this, aliases: [{ parent: pulumi.rootStackResource }] },
+        );
+
+        // NetworkPolicy for Grafana: restricts ingress to tailscale only and egress to
+        // necessary services. The K8s API rule uses no `to:` constraint because K3s
+        // evaluates NetworkPolicy post-DNAT — hardcoding the ClusterIP (10.43.0.1)
+        // does not match after it is translated to the node's real port 6443.
+        const networkPolicy = new kubernetes.networking.v1.NetworkPolicy(
+            "grafana-network-policy",
+            {
+                metadata: { name: "grafana", namespace: "default" },
+                spec: {
+                    podSelector: {
+                        matchLabels: { "app.kubernetes.io/name": "grafana" },
+                    },
+                    policyTypes: ["Ingress", "Egress"],
+                    ingress: [
+                        {
+                            from: [
+                                {
+                                    namespaceSelector: {
+                                        matchLabels: {
+                                            "kubernetes.io/metadata.name": "tailscale",
+                                        },
+                                    },
+                                },
+                            ],
+                            ports: [{ port: 3000, protocol: "TCP" }],
+                        },
+                    ],
+                    egress: [
+                        // DNS resolution via kube-dns
+                        {
+                            ports: [
+                                { port: 53, protocol: "UDP" },
+                                { port: 53, protocol: "TCP" },
+                            ],
+                            to: [
+                                {
+                                    namespaceSelector: {
+                                        matchLabels: {
+                                            "kubernetes.io/metadata.name": "kube-system",
+                                        },
+                                    },
+                                    podSelector: {
+                                        matchLabels: { "k8s-app": "kube-dns" },
+                                    },
+                                },
+                            ],
+                        },
+                        // Kubernetes API server — no `to:` restriction because K3s
+                        // evaluates NetworkPolicy post-DNAT, so the ClusterIP 10.43.0.1:443
+                        // is already translated to the node IP on port 6443 by the time
+                        // the policy is evaluated.
+                        {
+                            ports: [
+                                { port: 443, protocol: "TCP" },
+                                { port: 6443, protocol: "TCP" },
+                            ],
+                        },
+                        // Prometheus datasource
+                        {
+                            ports: [{ port: 9090, protocol: "TCP" }],
+                            to: [
+                                {
+                                    podSelector: {
+                                        matchLabels: {
+                                            "app.kubernetes.io/name": "prometheus",
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                        // Loki datasource
+                        {
+                            ports: [{ port: 3100, protocol: "TCP" }],
+                            to: [
+                                {
+                                    podSelector: {
+                                        matchLabels: { "app.kubernetes.io/name": "loki" },
+                                    },
+                                },
+                            ],
+                        },
+                        // External HTTPS (e.g. plugin update checks)
+                        {
+                            ports: [{ port: 443, protocol: "TCP" }],
+                            to: [
+                                {
+                                    ipBlock: {
+                                        cidr: "0.0.0.0/0",
+                                        except: [
+                                            "10.0.0.0/8",
+                                            "172.16.0.0/12",
+                                            "192.168.0.0/16",
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    ],
                 },
             },
             { parent: this, aliases: [{ parent: pulumi.rootStackResource }] },
