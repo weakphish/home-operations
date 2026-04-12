@@ -100,6 +100,45 @@ loki.write "local" {
             { parent: this, aliases: [{ parent: pulumi.rootStackResource }] },
         );
 
+        // NetworkPolicy for Alloy: egress to K8s API (pod/event discovery) and Loki.
+        // No `to:` restriction on K8s API ports because K3s evaluates NetworkPolicy
+        // post-DNAT — ClusterIP 10.43.0.1:443 is translated to node_ip:6443 before
+        // the policy is evaluated, so port 443 alone would not match.
+        new kubernetes.networking.v1.NetworkPolicy(
+            "alloy-network-policy",
+            {
+                metadata: { name: "alloy", namespace: "default" },
+                spec: {
+                    podSelector: {
+                        matchLabels: { "app.kubernetes.io/name": "alloy" },
+                    },
+                    policyTypes: ["Egress"],
+                    egress: [
+                        // K8s API — no `to:` because K3s post-DNAT translates
+                        // 10.43.0.1:443 → node_ip:6443 before policy evaluation.
+                        {
+                            ports: [
+                                { port: 443, protocol: "TCP" },
+                                { port: 6443, protocol: "TCP" },
+                            ],
+                        },
+                        // Loki: ship collected logs and events
+                        {
+                            ports: [{ port: 3100, protocol: "TCP" }],
+                            to: [
+                                {
+                                    podSelector: {
+                                        matchLabels: { "app.kubernetes.io/name": "loki" },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            },
+            { parent: this },
+        );
+
         this.registerOutputs({ releaseName: this.release.name });
     }
 }

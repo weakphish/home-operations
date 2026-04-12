@@ -89,6 +89,123 @@ class KubePrometheusStack extends pulumi.ComponentResource {
             { parent: this, aliases: [{ parent: pulumi.rootStackResource }] },
         );
 
+        // NetworkPolicy for the Prometheus server: restricts ingress to Grafana only and
+        // egress to K8s API + scrape targets. No `to:` restriction on the K8s API ports
+        // because K3s evaluates NetworkPolicy post-DNAT — ClusterIP 10.43.0.1:443 is
+        // translated to the node IP on port 6443 before the policy is evaluated, so
+        // matching on port 443 alone would never work.
+        new kubernetes.networking.v1.NetworkPolicy(
+            "prometheus-network-policy",
+            {
+                metadata: { name: "prometheus", namespace: "default" },
+                spec: {
+                    podSelector: {
+                        matchLabels: { "app.kubernetes.io/name": "prometheus" },
+                    },
+                    policyTypes: ["Ingress", "Egress"],
+                    ingress: [
+                        {
+                            from: [
+                                {
+                                    podSelector: {
+                                        matchLabels: { "app.kubernetes.io/name": "grafana" },
+                                    },
+                                },
+                            ],
+                            ports: [{ port: 9090, protocol: "TCP" }],
+                        },
+                    ],
+                    egress: [
+                        // K8s API for service discovery — no `to:` because K3s post-DNAT
+                        // translates 10.43.0.1:443 → node_ip:6443 before policy evaluation.
+                        {
+                            ports: [
+                                { port: 443, protocol: "TCP" },
+                                { port: 6443, protocol: "TCP" },
+                            ],
+                        },
+                        // node-exporter runs on host network (node IP, port 9100);
+                        // kubelet metrics also run on host network (port 10250).
+                        // No `to:` restriction covers both host and pod IPs.
+                        {
+                            ports: [
+                                { port: 9100, protocol: "TCP" },
+                                { port: 10250, protocol: "TCP" },
+                            ],
+                        },
+                        // In-cluster scrape targets: alertmanager, self-scrape, coredns,
+                        // kube-state-metrics, and various /metrics sidecar ports.
+                        {
+                            ports: [
+                                { port: 8080, protocol: "TCP" },
+                                { port: 9090, protocol: "TCP" },
+                                { port: 9093, protocol: "TCP" },
+                                { port: 9153, protocol: "TCP" },
+                            ],
+                            to: [{ podSelector: {} }],
+                        },
+                    ],
+                },
+            },
+            { parent: this },
+        );
+
+        // NetworkPolicy for Alertmanager: allows ingress from Prometheus (scrape + alerts)
+        // and Tailscale (UI access). Egress is handled by global allow policies.
+        new kubernetes.networking.v1.NetworkPolicy(
+            "alertmanager-network-policy",
+            {
+                metadata: { name: "alertmanager", namespace: "default" },
+                spec: {
+                    podSelector: {
+                        matchLabels: { "app.kubernetes.io/name": "alertmanager" },
+                    },
+                    policyTypes: ["Ingress"],
+                    ingress: [
+                        {
+                            from: [
+                                {
+                                    podSelector: {
+                                        matchLabels: { "app.kubernetes.io/name": "prometheus" },
+                                    },
+                                },
+                            ],
+                            ports: [
+                                { port: 9093, protocol: "TCP" },
+                                { port: 8080, protocol: "TCP" },
+                            ],
+                        },
+                    ],
+                },
+            },
+            { parent: this },
+        );
+
+        // NetworkPolicy for the Prometheus Operator: only needs K8s API access to
+        // reconcile Prometheus, Alertmanager, and ServiceMonitor CRs. Same post-DNAT
+        // reasoning as above — must allow port 6443 with no `to:` restriction.
+        new kubernetes.networking.v1.NetworkPolicy(
+            "prometheus-operator-network-policy",
+            {
+                metadata: { name: "prometheus-operator", namespace: "default" },
+                spec: {
+                    podSelector: {
+                        matchLabels: { "app.kubernetes.io/name": "kube-prometheus-stack-prometheus-operator" },
+                    },
+                    policyTypes: ["Egress"],
+                    egress: [
+                        {
+                            ports: [
+                                { port: 443, protocol: "TCP" },
+                                { port: 6443, protocol: "TCP" },
+                            ],
+                        },
+                    ],
+                },
+            },
+            { parent: this },
+        );
+
         this.registerOutputs({ releaseName: this.release.name });
     }
 }
